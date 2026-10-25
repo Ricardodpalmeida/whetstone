@@ -1,0 +1,35 @@
+name: Bug or wrong guidance
+description: A rule, reference, template, script or install step is wrong, out of date or made your agent worse.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        "This rule is wrong" reports are the most useful feedback Whetstone gets. Remove secrets and personal data from anything you paste.
+  - type: input
+    id: location
+    attributes:
+      label: Where is the problem?
+      description: The file and section, for example skills/whetstone/references/security.md, "Authenticate users".
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong, and what is right?
+      description: Quote the text or describe what the agent did, then say what it should say or do instead.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: A link to a public source, a transcript excerpt, or a command and its output.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Agent, version and Whetstone version
+      description: For example the output of `claude --version`, and the version in SKILL.md or the commit you installed.

@@ -1,0 +1,49 @@
+name: Rule or topic proposal
+description: Propose a new rule, reference, stack note or cloud guideline.
+title: "[Proposal] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Every rule must earn its tokens. CONTRIBUTING.md explains what a proposal needs.
+  - type: textarea
+    id: proposal
+    attributes:
+      label: The rule or topic
+      description: Write it as an instruction an agent can follow, and say where it belongs (the router, an existing reference or a new one).
+    validations:
+      required: true
+  - type: textarea
+    id: failure
+    attributes:
+      label: The failure it prevents
+      description: What agents do today without it. A transcript or a diff is the strongest evidence.
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Public source
+      description: A standard, RFC, official documentation or widely used guide that backs it. Link it.
+    validations:
+      required: true
+  - type: textarea
+    id: tokens
+    attributes:
+      label: Why it is worth its tokens
+      description: How often it applies, and what it could replace or shorten.
+    validations:
+      required: true
+  - type: textarea
+    id: test
+    attributes:
+      label: Eval or test
+      description: An eval prompt with gradable assertions, or a unit test for the scanner or validator, that shows the rule working.
+  - type: checkboxes
+    id: licence
+    attributes:
+      label: Licence
+      options:
+        - label: I agree that my contribution is licensed under MIT-0.
+          required: true

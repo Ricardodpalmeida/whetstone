@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate and test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12", "3.14"]
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Validate the skill and evals
+        run: python3 -B tools/validate_skill.py --strict
+
+      - name: Run the unit tests
+        run: python3 -B -m unittest discover -s tests -v
+
+      - name: Check the repository prose for em and en dashes
+        run: |
+          python3 - <<'EOF'
+          import pathlib, sys
+          files = [pathlib.Path("README.md"), pathlib.Path("CONTRIBUTING.md")]
+          files += sorted(pathlib.Path(".github").rglob("*.yml"))
+          bad = [
+              f"{path}:{number}"
+              for path in files
+              for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1)
+              if chr(0x2013) in line or chr(0x2014) in line
+          ]
+          if bad:
+              print("Em or en dashes found:", *bad, sep="\n  ")
+              sys.exit(1)
+          print(f"No em or en dashes in {len(files)} files.")
+          EOF

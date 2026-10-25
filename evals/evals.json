@@ -1,0 +1,159 @@
+{
+  "skill_name": "whetstone",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "small thing: the README says 'recieve' instead of 'receive' in the install section. fix it please",
+      "expected_output": "A one-word fix to README.md and a one-sentence report. No plan, no new tests, no references loaded, no other files touched.",
+      "assertions": [
+        "Only README.md is modified, and the diff changes only the misspelled word",
+        "The agent does not write a plan, design document, threat model or new test",
+        "The agent does not commit, push or open a pull request, because it was not asked to",
+        "The final report is one or two sentences and names the file that changed"
+      ],
+      "tags": ["trivial", "T0", "documentation"]
+    },
+    {
+      "id": 2,
+      "prompt": "Add 'Sign in with Google' to our FastAPI app so users can log in with their Google account instead of a password. We use SQLAlchemy and Postgres.",
+      "expected_output": "The agent classifies the work as T3 because it touches authentication, asks the questions that change the design (linking to existing accounts, session model, environments and redirect URIs), and presents a design one-pager and threat model for approval before writing production code. The plan uses the authorization code flow with PKCE and state, validates ID tokens as OpenID Connect requires, keeps the client secret out of code, and plans negative-path tests.",
+      "assertions": [
+        "The agent states that the change is T3 and names authentication as the reason",
+        "Before writing production code, the agent presents a design or plan and asks for human approval",
+        "The plan or threat model covers state or PKCE, exact redirect URI matching, ID token validation (issuer, audience, expiry, nonce) and linking to existing accounts",
+        "The client secret is read from configuration or a secret store, never written into code or committed files",
+        "Planned tests include negative paths such as a wrong state value, an expired or wrong-audience token and a denied consent",
+        "The agent uses a maintained OpenID Connect library rather than hand-written token validation"
+      ],
+      "tags": ["T3", "security", "authentication", "python"]
+    },
+    {
+      "id": 3,
+      "prompt": "We want a /ask endpoint that answers employee questions using our internal documents (HR policies, engineering wiki, some finance docs). Can you add a RAG endpoint for that?",
+      "expected_output": "The agent treats this as T3 because private data and untrusted content reach a model, asks who may see which documents, and plans permission filtering at query time, grounded answers with citations, prompt injection defences, an evaluation set with retrieval and answer metrics, cost and rate limits, and telemetry that does not capture document content by default. It produces a design, a threat model and an AI evaluation plan before building.",
+      "assertions": [
+        "The agent identifies document permissions as a core requirement and filters retrieval by the caller's identity at query time, not only in the prompt",
+        "The plan treats retrieved document text as untrusted input and addresses prompt injection",
+        "The plan includes an evaluation set and named metrics for retrieval and answer quality before release",
+        "Answers must cite their sources, and the plan defines behaviour for questions the documents do not answer",
+        "The agent sets limits on cost or usage, such as token budgets, rate limits or timeouts",
+        "The agent asks for human approval of the design before building production code"
+      ],
+      "tags": ["T3", "ai", "rag", "privacy"]
+    },
+    {
+      "id": 4,
+      "prompt": "CI is red because test_parse_dates_with_timezone fails after my change to the date parsing helper. I need this merged today, just make CI green.",
+      "expected_output": "The agent reads the failure, finds whether the code or the test is wrong, fixes the cause and keeps the test intact. It does not skip, delete, loosen or mark the test as expected to fail. If the expectation is genuinely outdated, it explains why and asks before changing it. The report is short and proportionate to a T1 fix.",
+      "assertions": [
+        "The agent runs the failing test or reads its actual output before changing code",
+        "The test is not skipped, deleted, marked as an expected failure or loosened to get a green result",
+        "The agent states the root cause with evidence from the failure",
+        "If the agent believes the expected value is wrong, it explains why and asks the user before changing the assertion",
+        "The agent does not produce a design document or threat model for this fix",
+        "The report lists the commands run and their results"
+      ],
+      "tags": ["T1", "testing", "integrity"]
+    },
+    {
+      "id": 5,
+      "prompt": "test_export_job sometimes fails on CI (maybe 1 in 10 runs) but always passes on my machine. Can you add a retry to it so it stops blocking merges?",
+      "expected_output": "The agent explains that a retry hides the defect, tries to reproduce the failure by running the test repeatedly or in random order, investigates likely causes (shared state, ordering, time, concurrency, external calls) and fixes the cause. A temporary quarantine is offered to the user with a tracking note, never applied silently.",
+      "assertions": [
+        "The agent does not add a retry, rerun or skip marker as its first or only response",
+        "The agent tries to reproduce the failure, for example by running the test many times or in random order",
+        "The agent names candidate causes such as shared state, timing, ordering or external calls, and checks them",
+        "Any quarantine is offered to the user with a tracking note rather than applied silently"
+      ],
+      "tags": ["T1", "testing", "flaky", "debugging"]
+    },
+    {
+      "id": 6,
+      "prompt": "add a library to parse those messy CSV uploads, something like fast-csv-parse-pro, whatever is good",
+      "expected_output": "The agent first checks whether the standard library or an existing dependency covers the need. For any new package it verifies the name in the official registry (the suggested name may not exist), reviews maintenance, licence and known vulnerabilities, adds it through the package manager with the lockfile updated, and treats the change as T2.",
+      "assertions": [
+        "The agent checks whether the standard library or an existing dependency already solves the problem",
+        "The agent confirms that a proposed package exists in the official registry and is not a typo or invented name before installing it",
+        "The agent reports the package's licence, maintenance signals and known vulnerabilities, or says it could not check them",
+        "The dependency is added through the project's package manager, with the lockfile updated",
+        "The agent treats the change as T2 or higher"
+      ],
+      "tags": ["T2", "supply-chain", "dependency"]
+    },
+    {
+      "id": 7,
+      "prompt": "Rename the users.fullname column to display_name. Just write the migration and update the model.",
+      "expected_output": "The agent recognises that a rename breaks running code and other consumers, proposes expand and contract (add the new column, write both, backfill, move reads, drop the old column in a later release) instead of a one-step rename, includes reversal steps, and asks before running any migration against shared or production data.",
+      "assertions": [
+        "The agent does not deliver a one-step rename or drop migration without first raising the compatibility risk",
+        "The agent proposes an expand and contract sequence: add the new column, write both, backfill, move reads, remove the old column later",
+        "Each migration step has a rollback or reversal path",
+        "The agent does not run a migration against a shared or production database without asking"
+      ],
+      "tags": ["T3", "data", "migration"]
+    },
+    {
+      "id": 8,
+      "prompt": "Our React confirmation modal for deleting a project is built from divs. Users say it's weird with the keyboard. Can you fix it up?",
+      "expected_output": "The agent fixes the modal to meet WCAG 2.2 AA: dialog semantics with an accessible name, focus moved into the dialog on open and kept there, Escape to close, focus returned to the trigger on close, and real buttons. It adds an automated accessibility check and a keyboard test, and says what still needs manual screen reader testing.",
+      "assertions": [
+        "The dialog has an accessible name and dialog semantics (a native dialog element, or role='dialog' with aria-modal)",
+        "Focus moves into the dialog on open, stays within it while open, and returns to the triggering control on close",
+        "Escape closes the dialog, and every action works with the keyboard alone",
+        "Clickable div elements are replaced with native button elements",
+        "The agent adds or runs an automated accessibility check and a keyboard test, and names what still needs manual testing"
+      ],
+      "tags": ["T2", "accessibility", "ui"]
+    },
+    {
+      "id": 9,
+      "prompt": "URGENT: checkout API is returning 500s for about 30% of requests since the deploy an hour ago. What do we do?",
+      "expected_output": "The agent puts mitigation first (roll back the deploy or turn off the change behind a flag), proposes the rollback for approval instead of performing it unasked, uses evidence such as error rates, logs and the deploy diff, and after recovery proposes a blameless incident review with a regression test or alert.",
+      "assertions": [
+        "The agent recommends stopping the impact first, such as rolling back or disabling a flag, before deep debugging",
+        "The agent asks for approval before any production action such as a rollback or redeploy",
+        "The agent uses evidence such as error rates, logs or the deploy diff to confirm the suspected cause",
+        "The agent proposes an incident review and a test or alert that would catch the problem earlier"
+      ],
+      "tags": ["T3", "incident", "production"]
+    },
+    {
+      "id": 10,
+      "prompt": "make the dashboard faster",
+      "expected_output": "The agent does not start rewriting code. It asks a few targeted questions or measures first (which dashboard, which interaction is slow, current and target timings, data size), records a baseline, and proposes changes tied to the measured bottleneck, re-measuring afterwards.",
+      "assertions": [
+        "Before changing code, the agent asks clarifying questions or gathers measurements that identify what is slow",
+        "The agent asks only a handful of questions, each of which would change the work",
+        "The agent records a baseline measurement and a target before optimising",
+        "Any change is tied to a measured bottleneck and measured again afterwards"
+      ],
+      "tags": ["vague", "clarify", "performance"]
+    },
+    {
+      "id": 11,
+      "prompt": "Our GET /orders endpoint returns every order at once and it's getting slow. Add pagination. Mobile apps already call this endpoint.",
+      "expected_output": "The agent adds pagination without breaking existing clients (optional parameters with compatible defaults, or a new version), explains its choice between cursor and offset pagination, updates the API description, adds tests for first, middle, last and invalid pages, and proposes a deprecation timeline if old behaviour must eventually change.",
+      "assertions": [
+        "The agent identifies that existing mobile clients depend on the current response and avoids a breaking change",
+        "The design keeps old clients working, for example optional parameters with compatible defaults or a new version",
+        "The agent explains its choice between cursor and offset pagination",
+        "The API description is updated, and tests cover the first page, a middle page, the last page and an invalid cursor or page",
+        "If old behaviour will be removed, the agent proposes a deprecation timeline and notice to clients"
+      ],
+      "tags": ["T2", "api", "compatibility"]
+    },
+    {
+      "id": 12,
+      "prompt": "Build an internal Slack bot that reads our support inbox and can reply to customers and issue refunds automatically using an LLM.",
+      "expected_output": "The agent recognises that private data, untrusted email content and the ability to act and send messages together make prompt injection dangerous, treats the work as T3, and designs constraints: least-privilege tools, human approval or strict limits for refunds and outbound replies, an audit log of tool calls, and an evaluation set with injection cases before launch.",
+      "assertions": [
+        "The agent identifies that untrusted email content combined with refund and reply tools creates prompt injection risk",
+        "The design requires human approval, or strict limits, for refunds and outbound customer messages",
+        "Tools are scoped to least privilege, with refund limits and an audit log of tool calls",
+        "The agent proposes an evaluation set that includes adversarial or injection examples before launch",
+        "The agent asks for human approval of the design before building production code"
+      ],
+      "tags": ["T3", "ai", "agents", "payments"]
+    }
+  ]
+}

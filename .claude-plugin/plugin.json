@@ -1,0 +1,14 @@
+{
+  "name": "whetstone",
+  "displayName": "Whetstone",
+  "version": "0.1.1",
+  "description": "Sharpen your coding agent. One Agent Skill of engineering standards that scales ceremony to risk, from a typo fix to a payments change.",
+  "author": {
+    "name": "Ricardo Almeida",
+    "url": "https://github.com/Ricardodpalmeida"
+  },
+  "homepage": "https://github.com/Ricardodpalmeida/whetstone",
+  "repository": "https://github.com/Ricardodpalmeida/whetstone",
+  "license": "MIT-0",
+  "keywords": ["agent-skills", "engineering-standards", "code-quality", "security", "testing"]
+}
