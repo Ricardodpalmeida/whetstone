@@ -33,8 +33,8 @@ Ask only when the answer changes implementation, cannot be discovered, and a wro
 |---|---|
 | The fact is discoverable from code, config, docs, history or by running the system | Look it up. Do not ask. |
 | A preference with a clear precedent in the codebase | Follow the precedent and say so. |
-| A choice that changes user-visible behaviour, a contract, stored data, cost or security posture | Ask before building. |
-| An irreversible or externally visible action | Ask and wait for an explicit yes. |
+| An unresolved choice that changes user-visible behaviour, a contract, stored data, cost or security posture | Ask before building; do not reopen decisions the user already made. |
+| An irreversible or externally visible action | Ask and wait unless the user already explicitly requested that action and scope. Reuse existing authorisation; ask again only if scope or risk changes. |
 | Ambiguity in a T0 or T1 task whose outcome is cheap to change | Proceed, state the assumption, offer the alternative. |
 | Nobody is available to answer (unattended run) | Take the most reversible option, record the assumption prominently, and take no irreversible step. |
 

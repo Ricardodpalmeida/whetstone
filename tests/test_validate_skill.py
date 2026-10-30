@@ -201,6 +201,15 @@ class BodyAndLinkTests(unittest.TestCase):
         self.assertTrue(any("'#no-such-heading'" in m for m in found))
         self.assertTrue(any("forward slashes" in m for m in found))
 
+    def test_nested_fence_examples_do_not_become_links_or_style_errors(self):
+        for outer, inner in (("````", "```"), ("~~~", "```")):
+            with self.subTest(outer=outer):
+                body = ("# Demo\n\n" + outer + "markdown\n" + inner + "python\n"
+                        "[example](missing-in-code.md)\n- **Example:** allowed inside code\n"
+                        + inner + "\n" + outer + "\n[broken](missing-outside.md)\n")
+                _, report = SkillFixture(self, body=body).validate()
+                self.assertEqual(messages(report), ["broken link: missing-outside.md"])
+
     def test_long_reference_needs_complete_contents(self):
         sections = ["First part", "Second part", "Sources"]
         for text, expected in (
@@ -320,6 +329,16 @@ class CommandLineTests(unittest.TestCase):
         with contextlib.redirect_stdout(out):
             code = vs.main(list(args))
         return code, out.getvalue()
+
+    def test_invalid_utf8_reports_failure_without_traceback(self):
+        for name in ("SKILL.md", "references/guide.md", "scripts/check.py"):
+            with self.subTest(name=name):
+                fixture = SkillFixture(self, files={"scripts/check.py": "pass\n"})
+                (fixture.dir / name).write_bytes(b"\xff")
+                code, out = self.run_main("--no-evals", str(fixture.dir))
+                self.assertEqual(code, 1)
+                self.assertIn("not valid UTF-8", out)
+                self.assertIn(name, out.replace("\\", "/"))
 
     def test_exit_codes(self):
         good = SkillFixture(self)

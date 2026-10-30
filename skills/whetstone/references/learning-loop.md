@@ -41,7 +41,7 @@ Claude Code distinguishes instruction context from enforced configuration: use a
 
 ## Write lessons where the next session will read them
 
-1. Put project lessons in the repository's existing instruction file. Claude Code reads `CLAUDE.md` (or `.claude/CLAUDE.md`) and reads `AGENTS.md` when there is no `CLAUDE.md`; many other agents, including OpenClaw agents, read `AGENTS.md`. Use whichever file the repository already has. Do not create a second file that duplicates it.
+1. Use the repository's existing instruction file; do not duplicate it. Claude Code's `AGENTS.md` support depends on version and settings: by default, a `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` in the working directory or an ancestor takes precedence. Confirm loaded files with `/context`; if necessary, import `@AGENTS.md` from `CLAUDE.md` instead of copying it. Other agents, including OpenClaw, also read `AGENTS.md`.
 2. Keep each instruction file short. Claude Code's guidance targets under 200 lines per `CLAUDE.md`, because longer files consume context and reduce adherence.
 3. Keep only facts every session needs in the main file: build and test commands, conventions, layout, "always" and "never" rules. Move multi-step procedures into a skill, and rules for one part of the codebase into a path-scoped rule file (for example `.claude/rules/`) or a nested instruction file in that directory.
 4. Put longer explanations of solved problems in the repository's documentation, and link to them from the instruction file instead of pasting them in.

@@ -17,7 +17,7 @@ the rule, the location and a redacted preview.
 Exit status:
   0  no blocking findings
   1  a likely secret was found (with --strict, also test-weakening signals or new suppressions)
-  2  usage error, or git failed
+  2  usage error, or git/file reading failed
 """
 
 from __future__ import annotations
@@ -32,8 +32,7 @@ import sys
 from dataclasses import dataclass, field
 from typing import Iterable, List, Optional, Tuple
 
-# Untracked files above this size are almost always generated or binary artefacts;
-# skipping them keeps the scan fast without hiding hand-written changes.
+# Bound memory use when reading untracked files; larger files need separate review.
 MAX_UNTRACKED_BYTES = 1_000_000
 
 # Shannon entropy (bits per character) below which a value caught by a heuristic
@@ -186,8 +185,8 @@ def _git(repo: str, *args: str) -> str:
     return result.stdout
 
 
-# Explicit prefixes and no colour or external diff tools, whatever the user's git config says.
-DIFF_FLAGS = ("--no-color", "--no-ext-diff", "--src-prefix=a/", "--dst-prefix=b/", "-M", "--unified=0")
+# Scan raw patches: explicit prefixes, no colour, external diffs or text conversions.
+DIFF_FLAGS = ("--no-color", "--no-ext-diff", "--no-textconv", "--src-prefix=a/", "--dst-prefix=b/", "-M", "--unified=0")
 
 
 def collect_changes(repo: str, staged: bool, base: Optional[str], untracked: bool) -> List[FileChange]:
@@ -224,8 +223,8 @@ def _untracked_files(top: str) -> Iterable[FileChange]:
                 continue
             with open(full, "rb") as handle:
                 data = handle.read()
-        except OSError:
-            continue
+        except OSError as exc:
+            raise GitError(f"cannot read untracked file {rel}: {exc}") from exc
         if b"\0" in data[:8192]:
             yield FileChange(path=rel, status="binary")
             continue
@@ -247,6 +246,7 @@ CODE_EXTENSIONS = JS_EXTENSIONS + (
 )
 TEST_TOKENS = {"test", "tests", "spec", "specs", "e2e"}
 PROMPT_TOKENS = {"prompt", "prompts"}
+AGENT_INSTRUCTION_FILES = {"agents.md", "claude.md", "skill.md"}
 AUTH_TOKENS = {
     "auth", "authn", "authz", "authentication", "authorization", "authorisation", "oauth", "oauth2",
     "oidc", "saml", "sso", "login", "logout", "signin", "signout", "signup", "session", "sessions",
@@ -400,7 +400,7 @@ def suggest_tier(changes: List[FileChange]) -> Tuple[int, List[dict], List[str]]
         added_text = [text for _, text in change.added]
         changed_text = added_text + [text for _, text in change.removed]
 
-        if tokens & PROMPT_TOKENS and not test:
+        if not test and (tokens & PROMPT_TOKENS or base in AGENT_INSTRUCTION_FILES):
             add(2, "language model prompt or agent instructions", path)
             continue
         if is_doc_path(path):

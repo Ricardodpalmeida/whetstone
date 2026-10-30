@@ -36,7 +36,7 @@ The triggers are explicit. A new dependency, network call, user-facing flow, per
 
 ## What it changes
 
-Three of the twelve scenarios in [`evals/evals.json`](evals/evals.json) show the idea.
+Three of the thirteen scenarios in [`evals/evals.json`](evals/evals.json) show the idea.
 
 | You ask | The failure it guards against | What Whetstone asks for |
 |---|---|---|
@@ -64,8 +64,8 @@ Next: approve the deprecation notice for unpaginated responses
 | 6 stack notes | Python and FastAPI, .NET, TypeScript and React, Azure, data platforms, low-code tools |
 | 7 templates | Decision record, design one-pager, threat model, pull request, runbook, incident review, AI evaluation plan |
 | Change scanner | Suggests a minimum tier for a diff, flags weakened tests and new suppressions, finds likely secrets without printing them |
-| Evals | 12 behaviour scenarios with 58 gradable assertions; 20 trigger queries, half of them near misses |
-| Context budget | Discovery loads only the name and description. `SKILL.md` is 119 lines (about 9,300 characters); the 25 references total about 219,500 characters and load only when routed. |
+| Evals | 13 behaviour scenarios with 62 gradable assertions; 20 trigger queries, half of them near misses |
+| Context budget | Discovery loads only the name and description. `SKILL.md` is 119 lines (about 9,500 characters); the 25 references total about 219,700 characters and load only when routed. |
 
 The seven rules hold at every tier:
 
@@ -170,7 +170,7 @@ It exits with status 1 on a likely secret, and with `--strict` also on weakened 
 
 Whetstone aims to be the one place to find engineering-quality skills for coding agents. Next could come cloud guidelines for AWS and Google Cloud beside the Azure notes, and more stacks as people ask for them. The bar for every addition stays the same: no filler, no nonsense, no bloat. Every rule must earn its tokens, and a rule that does not change what an agent does gets cut.
 
-This is v0.1. The validator and 70 unit tests pass, but model behaviour is not measured yet: the 12 behaviour evals and 20 trigger queries in `evals/` have not been run against this release. The results, with and without the skill, will be published here. To run them yourself, follow the Agent Skills guides to [evaluating skill output](https://agentskills.io/skill-creation/evaluating-skills) and [optimising descriptions](https://agentskills.io/skill-creation/optimizing-descriptions), or use the [skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator) skill in Claude Code.
+This is v0.1. The validator and 75 unit tests pass, but model behaviour is not measured yet: the 13 behaviour evals and 20 trigger queries in `evals/` have not been run against this release. The results, with and without the skill, will be published here. To run them yourself, follow the Agent Skills guides to [evaluating skill output](https://agentskills.io/skill-creation/evaluating-skills) and [optimising descriptions](https://agentskills.io/skill-creation/optimizing-descriptions), or use the [skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator) skill in Claude Code.
 
 ### Feedback wanted
 

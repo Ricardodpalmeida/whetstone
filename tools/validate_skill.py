@@ -388,8 +388,8 @@ def read_markdown(path: Path) -> MarkdownFile:
         if fence_match:
             marker = fence_match.group(1)
             if fence is None:
-                fence = marker[0] * 3
-            elif marker.startswith(fence):
+                fence = marker
+            elif marker.startswith(fence) and not line[fence_match.end():].strip():
                 fence = None
             continue
         if fence is not None:
@@ -468,13 +468,16 @@ def check_contents(path: Path, doc: MarkdownFile, report: Report) -> None:
             report.error(path, line, f"the Contents section does not link to '## {text}'")
 
 
-def check_text_rules(path: Path, report: Report) -> None:
-    """Repository writing rules: no em or en dashes; no '**Label:** text' bullets in Markdown."""
+def check_text_rules(path: Path, report: Report) -> bool:
+    """Check writing rules; return whether the file could be read as UTF-8."""
     try:
         text = path.read_text(encoding="utf-8")
     except UnicodeDecodeError:
         report.error(path, None, "file is not valid UTF-8")
-        return
+        return False
+    except OSError as exc:
+        report.error(path, None, f"cannot read file: {exc}")
+        return False
     fence: Optional[str] = None
     escapes = path.suffix in (".json", ".py")  # a backslash-u escape of the code point yields the same character
     for number, line in enumerate(text.splitlines(), start=1):
@@ -486,10 +489,15 @@ def check_text_rules(path: Path, report: Report) -> None:
             continue
         fence_match = FENCE_RE.match(line)
         if fence_match:
-            fence = None if fence else fence_match.group(1)[0] * 3
+            marker = fence_match.group(1)
+            if fence is None:
+                fence = marker
+            elif marker.startswith(fence) and not line[fence_match.end():].strip():
+                fence = None
             continue
         if fence is None and BOLD_LABEL_BULLET_RE.match(line):
             report.error(path, number, "bullet uses the '**Label:** description' pattern; write a plain sentence or use a table")
+    return True
 
 
 # --------------------------------------------------------------------------- skill
@@ -504,7 +512,14 @@ def validate_skill(skill_dir: Path, report: Report) -> Optional[str]:
         report.error(skill_dir, None, "missing required file SKILL.md (the name is case-sensitive)")
         return None
 
-    text = skill_md.read_text(encoding="utf-8")
+    try:
+        text = skill_md.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        report.error(skill_md, None, "file is not valid UTF-8")
+        return None
+    except OSError as exc:
+        report.error(skill_md, None, f"cannot read file: {exc}")
+        return None
     name: Optional[str] = None
     body: List[str] = []
     try:
@@ -532,17 +547,17 @@ def validate_skill(skill_dir: Path, report: Report) -> Optional[str]:
         if path.name in STRAY_NAMES or path.suffix == ".pyc":
             report.warn(path, None, "generated or system file; remove it before installing or sharing the skill")
 
-    docs = {p.resolve(): read_markdown(p) for p in all_files if p.suffix == ".md"}
+    unreadable = {
+        path for path in all_files
+        if path.suffix in TEXT_SUFFIXES and not check_text_rules(path, report)
+    }
+    docs = {p.resolve(): read_markdown(p) for p in all_files if p.suffix == ".md" and p not in unreadable}
     linked = check_links(skill_dir, docs, report)
     for path, doc in docs.items():
         if path.name != "SKILL.md":
             check_contents(path, doc, report)
             if path.parent.name == "references" and len(doc.lines) > WARN_REFERENCE_LINES:
                 report.warn(path, None, f"{len(doc.lines)} lines; consider splitting it by topic")
-    for path in all_files:
-        if path.suffix in TEXT_SUFFIXES:
-            check_text_rules(path, report)
-
     from_skill_md = linked.get(skill_md.resolve(), set())
     for folder in ("references", "templates", "assets"):
         for path in sorted((skill_dir / folder).rglob("*")) if (skill_dir / folder).is_dir() else []:
@@ -553,6 +568,8 @@ def validate_skill(skill_dir: Path, report: Report) -> Optional[str]:
     scripts = skill_dir / "scripts"
     if scripts.is_dir():
         for path in sorted(p for p in scripts.rglob("*") if p.is_file() and "__pycache__" not in p.parts):
+            if path in unreadable:
+                continue
             if path.name not in text:
                 report.warn(path, None, "script is not mentioned in SKILL.md")
             if path.suffix == ".py":

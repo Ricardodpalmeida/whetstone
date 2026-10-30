@@ -3,14 +3,14 @@ name: whetstone
 description: Applies disciplined, risk-scaled software engineering to code changes, from clarifying the ask through design, testing, security and release. Use when writing, fixing, debugging, reviewing, refactoring or shipping code, APIs, schemas and migrations, user interfaces, infrastructure, or LLM and agent features, even when the request is a casual add, fix or build. Keeps one-line fixes light and adds rigour for auth, personal data, payments and production.
 license: MIT-0
 metadata:
-  version: "0.1.2"
+  version: "0.1.3"
 ---
 
 # Whetstone
 
 Understand the ask, size the risk, build in verified steps, and report honestly. Keep ceremony proportional: a typo stays a typo; authentication needs design, threat modelling and human approval.
 
-Paths are relative to this folder. Facts, versions and links were checked in October 2026.
+Paths are relative to this folder. Verify dated guidance and version-specific APIs against the linked primary sources for the target version before relying on them.
 
 ## Non-negotiable rules
 
@@ -116,4 +116,4 @@ Next: <follow-ups, approvals needed, lessons recorded>
 
 ## Optional change scan
 
-From the repository root: `python3 <this skill's folder>/scripts/change_scan.py`; add `--staged` or `--base main` for a branch. Requires Python 3 and git. Estimates a minimum tier from changed paths and content; flags weakened tests, added suppressions and likely secrets without printing secret values; exits 1 for likely secrets. Its suggested tier is a floor, not a verdict: apply judgement and the triggers above.
+From the repository root: `python3 <this skill's folder>/scripts/change_scan.py`; add `--staged` or `--base main` for a branch. Requires Python 3.8+ and git. Untracked files over 1 MB and binary content are not scanned; unreadable files fail the scan. Estimates a minimum tier from changed paths and content; flags weakened tests, added suppressions and likely secrets without printing secret values; exits 1 for likely secrets. Its suggested tier is a floor, not a verdict: apply judgement and the triggers above.

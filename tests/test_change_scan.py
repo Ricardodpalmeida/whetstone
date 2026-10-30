@@ -19,6 +19,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -112,6 +113,13 @@ class ParseDiffTests(unittest.TestCase):
 
 
 class TierTests(unittest.TestCase):
+    def test_agent_instruction_files_are_not_trivial_documentation(self):
+        for path in ("AGENTS.md", "CLAUDE.md", "skills/demo/SKILL.md", "src/AGENTS.md"):
+            with self.subTest(path=path):
+                tier, _, _ = tier_of(git_diff(path, added=["Change agent behaviour."]))
+                self.assertEqual(tier, 2)
+        self.assertEqual(tier_of(git_diff("docs/README.md", added=["Fix spelling."]))[0], 0)
+
     def test_documentation_only_is_t0(self):
         tier, labels, _ = tier_of(git_diff("README.md", added=["Fix typo"]), git_diff("docs/auth.md", added=["x"]))
         self.assertEqual(tier, 0)
@@ -386,6 +394,30 @@ class GitIntegrationTests(unittest.TestCase):
     def commit_all(self, message="commit"):
         self.git("add", "-A")
         self.git("commit", "-q", "-m", message)
+
+    def test_unreadable_untracked_file_fails_scan(self):
+        self.write("settings.txt", "content cannot be read\n")
+        out, err = io.StringIO(), io.StringIO()
+        with mock.patch.object(cs, "open", side_effect=PermissionError("denied"), create=True):
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+                code = cs.main(["--repo", self.repo])
+        self.assertEqual(code, 2)
+        self.assertIn("settings.txt", err.getvalue())
+        self.assertNotIn("no blocking findings", out.getvalue())
+
+    def test_textconv_cannot_hide_added_credentials(self):
+        self.write(".gitattributes", "*.data diff=hide\n")
+        self.write("payload.data", "safe\n")
+        self.commit_all()
+        self.write("converter.py", "print('redacted')\n")
+        converter = Path(self.repo, "converter.py").as_posix()
+        executable = Path(sys.executable).as_posix()
+        self.git("config", "diff.hide.textconv", f'"{executable}" "{converter}"')
+        self.write("payload.data", f"TOKEN = '{GITHUB_TOKEN}'\n")
+        changes = cs.collect_changes(self.repo, staged=False, base=None, untracked=False)
+        report = cs.build_report(changes, strict=False)
+        self.assertEqual(report["exit_code"], 1)
+        self.assertEqual([s["kind"] for s in report["secrets"]], ["GitHub token"])
 
     def test_tracked_and_untracked_changes(self):
         self.write("src/app.py", "x = 1\n")
