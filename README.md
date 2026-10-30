@@ -26,10 +26,10 @@ Version 0.2.0 removes automatic T0-T3 workflow requirements, mandatory retrospec
 
 Copy only `skills/whetstone`, including its supporting files, into your agent's documented skill directory. Avoid installing multiple copies into the same agent.
 
-From ClawHub, once this version is public:
+From ClawHub:
 
 ```text
-clawhub install @ricardodpalmeida/whetstone --version 0.2.1
+clawhub install @ricardodpalmeida/whetstone --version 0.2.2
 ```
 
 Or use this repository with the skills CLI:

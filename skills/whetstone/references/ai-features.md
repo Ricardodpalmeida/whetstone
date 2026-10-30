@@ -30,12 +30,15 @@ Measure retrieval against labeled relevant documents, for example Recall@k, sepa
 
 Build a small evaluation set from the real task, with expected outcomes and cases for unavailable evidence, denied access, malicious retrieved instructions and failed tools. Use the models/configurations actually deployed. Include the permission and index-transition cases above when those boundaries change.
 
-Compare a proposed prompt/model/retrieval change with the current behavior on the same cases. Measure the outcome that matters plus cost/latency where relevant. Passing a few cases is a smoke check, not proof of reliability across users or models.
+For agents that act over several steps, evaluate the whole task, including interrupted or failed tool calls. Check resulting state and unintended effects, not just the final reply or a prescribed tool sequence.
+
+Compare a proposed prompt/model/retrieval change with the current behavior on the same cases and starting state. Record agent, model/configuration, dataset and grader/rubric versions. Report results by relevant scenario or user group alongside the aggregate; measure cost/latency where relevant. Repeat trials when variability could change the decision, distinguishing agent failures from grader or environment variation. Passing a few cases is a smoke check, not proof of reliability across users or models.
 
 Check provider retention and processing location against the project's requirements before sending private data. Avoid raw prompts/documents in telemetry by default. Preserve approved logging needed to investigate actions, with redaction and bounded retention.
 
 ## Sources
 
+- [Anthropic: evaluating AI agents](https://www.anthropic.com/research/demystifying-evals-for-ai-agents)
 - [OWASP LLM Prompt Injection Prevention](https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html)
 - [MCP security best practices](https://modelcontextprotocol.io/specification/latest/basic/security_best_practices)
 - [Microsoft: vector index compatibility](https://learn.microsoft.com/en-us/azure/search/vector-search-how-to-create-index)

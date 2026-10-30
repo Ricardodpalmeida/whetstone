@@ -3,7 +3,7 @@ name: whetstone
 description: Reviews software changes for failure risk, compatibility and sufficient verification. Use when a change affects shared data, public contracts, security, production or agent tool access, or when explicitly asked for Whetstone or a risk review.
 license: MIT-0
 metadata:
-  version: "0.2.1"
+  version: "0.2.2"
 ---
 
 # Whetstone
