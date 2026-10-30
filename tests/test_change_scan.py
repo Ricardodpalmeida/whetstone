@@ -317,7 +317,8 @@ class CommandLineTests(unittest.TestCase):
     def test_clean_change_exits_zero(self):
         code, out = self.run_main(git_diff("README.md", added=["Typo fixed"]))
         self.assertEqual(code, 0)
-        self.assertIn("Suggested minimum tier: T0", out)
+        self.assertIn("Review cue: T0", out)
+        self.assertIn("heuristic only", out)
 
     def test_secret_exits_one_without_printing_the_value(self):
         code, out = self.run_main(git_diff("src/a.py", added=[f'K = "{AWS_ID}"']))

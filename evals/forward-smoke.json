@@ -1,0 +1,29 @@
+{
+  "cases": [
+    {
+      "case": "typo",
+      "result": "pass",
+      "check": "exact one-word spelling correction"
+    },
+    {
+      "case": "cart",
+      "result": "pass",
+      "check": "----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK"
+    },
+    {
+      "case": "payment",
+      "result": "pass",
+      "check": "----------------------------------------------------------------------\nRan 6 tests in 0.000s\n\nOK"
+    },
+    {
+      "case": "retrieval",
+      "result": "pass",
+      "check": "----------------------------------------------------------------------\nRan 5 tests in 0.000s\n\nOK"
+    }
+  ],
+  "independent_assertions": "single charge after lost response/replay; unauthorized documents excluded before model",
+  "evaluators": "2 isolated subagents, inherited current Codex model/configuration; no model override",
+  "limits": "Four local synthetic cases, no control group or cross-model/general efficacy claim. Stable authenticated identity and gateway idempotency assumed by fixture contracts.",
+  "skill_version": "0.2.0",
+  "date": "2026-10-30"
+}

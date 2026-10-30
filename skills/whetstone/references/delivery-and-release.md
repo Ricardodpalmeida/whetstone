@@ -1,117 +1,29 @@
-# Delivery and release
+# Delivery and recovery
 
-Use for CI/CD, feature flags, deployment, rollout/rollback, package versions and changelogs.
+Use before an authorized publication, deployment, infrastructure change or incident response.
 
-## Contents
+## Make the action reviewable
 
-- [Rules for agents](#rules-for-agents)
-- [Keep the main branch releasable](#keep-the-main-branch-releasable)
-- [Separate deploying from releasing](#separate-deploying-from-releasing)
-- [Roll out progressively](#roll-out-progressively)
-- [Plan the rollback before the rollout](#plan-the-rollback-before-the-rollout)
-- [Manage infrastructure as code](#manage-infrastructure-as-code)
-- [Version and document releases](#version-and-document-releases)
-- [Measure delivery performance](#measure-delivery-performance)
-- [Failure modes](#failure-modes)
-- [Sources](#sources)
+Confirm the account, environment, artifact/commit, version and affected users. Check that the user's existing authorization covers this action; do not request it again for the same scope. Prepare the exact change and verification before asking for a missing decision. Follow required project checks and approvals without inventing additional gates.
 
-## Rules for agents
+Inspect a deployment plan for unexpected deletes, replacements, permission changes or data movement. Use the tested artifact rather than rebuilding different contents for production. Preserve unrelated configuration and the previous artifact when needed for recovery.
 
-1. Never deploy to production, publish a package, push a release tag, or change production configuration or feature flags without explicit approval for that specific action.
-2. Never skip, disable or weaken CI checks, branch protection or required reviews to get a change through.
-3. Prefer the reversible path: a flag you can turn off, a deploy you can roll back, a migration that keeps the old schema working.
+## Match recovery to the effect
 
-## Keep the main branch releasable
+For a reversible publication, verify the published version and how to withdraw it. For a production service, identify the health signal, stop condition and rollback/forward-fix path. Use a staged rollout when impact or uncertainty warrants it, not for every documentation update.
 
-1. Run the same checks on every change: build, formatting, linting, type checks, tests, dependency and secret scans. The pipeline definition lives in the repository and is reviewed like code.
-2. Keep the pipeline fast enough that people wait for it rather than work around it. Parallelise, cache dependencies and move slow suites to a later stage instead of deleting them.
-3. Treat a broken main branch as the team's top priority: revert first, then fix.
-4. Build each artefact once, give it an immutable version, and promote the same artefact through every environment. Supply environment differences through configuration at release time, as the Twelve-Factor App's build, release and run separation describes.
+A code rollback is safe only if it still understands the current data/configuration. Rehearse a material recovery path in a suitable environment and state any part not exercised. Compare a canary with its control; aggregate service metrics can hide a severe problem affecting a small rollout.
 
-## Separate deploying from releasing
+After the action, check user-visible behavior and the expected version. A successful upload, accepted request or access-control page does not prove publication, application health or delivery. Distinguish queued checks from a live result. If an external check fails, retain its status and artifact; do not create repeated releases merely to evade it.
 
-Deployment puts code on servers; release exposes behaviour. Flags allow frequent deployment and deliberate release. Pete Hodgson distinguishes four toggle types:
+## During an incident
 
-| Kind | Purpose | Expected lifetime |
-|---|---|---|
-| Release | Hide unfinished or unlaunched work | Days to weeks, then removed |
-| Experiment | A/B tests | Long enough for a significant result |
-| Ops | Kill switches and load controls for incidents | Mostly short; a few permanent kill switches |
-| Permission | Features for specific users or plans | Long-lived; often belongs in the product's authorisation model |
+Reduce ongoing impact first using the authorized, least disruptive intervention. Verify the affected environment and available evidence; do not assume rolling back is safe after a data change. Escalate a missing consequential decision while continuing read-only diagnosis.
 
-1. Give every flag an owner, a description, a default that is safe if the flag service is down, and, for release flags, a removal date with a tracked removal task.
-2. Test both states of a flag while it exists.
-3. Remove release flags and their dead branches promptly after launch. Flags are inventory with a carrying cost; some teams cap the number of live flags or fail a test when one passes its expiry date.
-4. Prefer the existing flag system in the codebase. If you need a vendor-neutral interface, OpenFeature provides one.
-
-## Roll out progressively
-
-Google SRE's canary approach: give the new version a small share of production traffic and compare it with the old.
-
-1. Start with a small share of traffic or a small set of instances, then widen in stages.
-2. Compare the canary population with a control population, not with the whole service. A 20 percent error rate on a 5 percent canary looks like a 1 percent blip in aggregate metrics.
-3. Judge the canary on a few user-facing indicators (error rate, latency) rather than noisy resource metrics, using metric windows no longer than the canary stage.
-4. Run one canary at a time, and automate the decision to pause or roll back when the canary is worse than the control.
-5. Where canarying is not possible, use blue-green deployment, or release to internal users first.
-
-## Plan the rollback before the rollout
-
-1. Write the rollback steps in the PR or runbook before deploying, and make sure the previous artefact is still available.
-2. Keep every database migration compatible with the previous application version, so rolling back the code does not require rolling back the schema (see [data-and-privacy.md](data-and-privacy.md)).
-3. When a deploy correlates with an incident, roll back or turn off the flag first, and investigate afterwards (see [debugging.md](debugging.md)).
-4. Choose a forward fix only when rollback is impossible or more dangerous, and say so explicitly.
-5. Practise rollbacks. A rollback path that has never run is a guess.
-
-## Manage infrastructure as code
-
-1. Define infrastructure, permissions and configuration in code in the repository, reviewed and applied through the pipeline. Avoid manual changes in production consoles; if one is unavoidable during an incident, record it and bring the code back in line.
-2. Review the planned changes (a plan or what-if output) before applying them, and read every delete or replace operation.
-3. Detect drift between the code and the real environment on a schedule.
-4. Give the deployment identity only the permissions it needs, and separate it from human administrator access.
-
-## Version and document releases
-
-1. Version packages and public APIs with Semantic Versioning 2.0.0: increment MAJOR for incompatible API changes, MINOR for backward-compatible features, PATCH for backward-compatible fixes. Version 0.y.z means anything may change. Never modify a released version; publish a new one.
-2. Announce a deprecation in a MINOR release before removing the feature in a MAJOR release, as the SemVer FAQ recommends.
-3. Keep a human-written changelog in the Keep a Changelog 1.1.0 style: an `Unreleased` section at the top, entries grouped under Added, Changed, Deprecated, Removed, Fixed and Security, newest version first, dates in ISO 8601 format. Do not paste the commit log; it is full of noise.
-4. Write release notes for the people affected: what changed for them, what they must do, and when.
-5. Tag releases in version control so every deployed version maps to a commit.
-
-Check (for T2 and T3 releases):
-
-- [ ] The artefact passed CI and is the one that was tested.
-- [ ] Rollback steps are written and the previous version is available.
-- [ ] Migrations are backward compatible, and destructive steps are deferred.
-- [ ] Dashboards and alerts for the change exist, and someone is watching the rollout.
-- [ ] Flags have owners and removal dates; the changelog and release notes are updated.
-
-## Measure delivery performance
-
-DORA tracks five delivery metrics in two groups:
-
-| Group | Metric | Meaning |
-|---|---|---|
-| Throughput | Change lead time | Time from commit to running in production |
-| Throughput | Deployment frequency | How often you deploy |
-| Throughput | Failed deployment recovery time | Time to recover from a deployment that needs immediate intervention |
-| Instability | Change fail rate | Share of deployments that need immediate intervention |
-| Instability | Deployment rework rate | Share of deployments that are unplanned and caused by a production incident |
-
-Use them to improve work systems, never to rank individuals or teams.
-
-## Failure modes
-
-- A two-year-old flag's forgotten "off" state breaks checkout during an incident.
-- Rebuilding for production changes the tested artefact.
-- Dropping a column makes code rollback fail.
-- Aggregate metrics hide canary defects until all users receive them.
-- Publishing a typo fix without permission consumes an unreusable package version.
+After mitigation, confirm recovery and investigate the cause. Add a regression check, alert or procedure correction that addresses the demonstrated failure. A formal incident review belongs where the impact or team process requires it; routine tasks do not need a retrospective document.
 
 ## Sources
 
-- Pete Hodgson, [Feature Toggles (aka Feature Flags)](https://martinfowler.com/articles/feature-toggles.html), defines the toggle categories and the practice of treating toggles as inventory.
-- [OpenFeature](https://openfeature.dev/) is a vendor-neutral feature flag standard incubating at the CNCF.
-- Google's SRE workbook, [Canarying Releases](https://sre.google/workbook/canarying-releases/), covers canary populations, metrics and durations.
-- [Semantic Versioning 2.0.0](https://semver.org/) and [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) define the versioning and changelog conventions.
-- DORA, [Software delivery performance metrics](https://dora.dev/guides/dora-metrics/), defines the five metrics.
-- [The Twelve-Factor App](https://12factor.net/) separates the build, release and run stages.
+- [Google SRE: canarying releases](https://sre.google/workbook/canarying-releases/)
+- [Google SRE: managing incidents](https://sre.google/sre-book/managing-incidents/)
+- [Google SRE: postmortem culture](https://sre.google/sre-book/postmortem-culture/)

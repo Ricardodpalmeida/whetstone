@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scan a code change for a minimum risk tier, weakened tests and likely secrets.
+"""Scan a code change for review cues, weakened tests and likely secrets.
 
 Run it from the repository you are changing. It needs only Python 3.8+ and git.
 
@@ -10,8 +10,8 @@ Examples:
   git diff | python3 change_scan.py --diff-file -
   python3 change_scan.py --json           # machine-readable output
 
-The tier it prints is a floor based on file paths and changed lines. The agent or
-reviewer still decides the real tier. Secret values are never printed: findings show
+The legacy tier label is a heuristic based on paths and changed lines, not a
+workflow requirement. The reviewer decides impact from the actual context. Secret values are never printed: findings show
 the rule, the location and a redacted preview.
 
 Exit status:
@@ -377,7 +377,7 @@ def is_dependency_path(path: str) -> bool:
 
 
 def suggest_tier(changes: List[FileChange]) -> Tuple[int, List[dict], List[str]]:
-    """Return (minimum tier, reasons, advisory notes) for the change set."""
+    """Return (legacy review cue, reasons, advisory notes) for the change set."""
     reasons: dict = {}
     notes: List[str] = []
 
@@ -429,7 +429,7 @@ def suggest_tier(changes: List[FileChange]) -> Tuple[int, List[dict], List[str]]
         if BUILD_RE.search(lower):
             add(2, "build or package configuration", path)
         if INFRA_RE.search(lower):
-            add(2, "infrastructure as code (T3 if production networking or security changes)", path)
+            add(2, "infrastructure as code (inspect production networking/security impact)", path)
         if CONTAINER_RE.search(lower):
             add(2, "container build or runtime configuration", path)
         if CONTRACT_RE.search(lower):
@@ -669,7 +669,7 @@ def build_report(changes: List[FileChange], strict: bool) -> dict:
         "files_changed": len(changes),
         "lines_added": sum(len(c.added) for c in changes),
         "lines_removed": sum(len(c.removed) for c in changes),
-        "minimum_tier": TIER_NAMES[tier],
+        "minimum_tier": TIER_NAMES[tier],  # Legacy JSON key retained for existing consumers.
         "tier_reasons": reasons,
         "notes": notes,
         "test_weakening": [f.as_dict() for f in weakening],
@@ -687,7 +687,7 @@ def format_text(report: dict) -> str:
     out = [
         f"change_scan: {report['files_changed']} file(s), "
         f"+{report['lines_added']} -{report['lines_removed']} lines",
-        f"Suggested minimum tier: {report['minimum_tier']} (a floor; the triggers in SKILL.md decide)",
+        f"Review cue: {report['minimum_tier']} (heuristic only; assess actual impact and reversibility)",
     ]
     for reason in report["tier_reasons"]:
         files = reason["files"]
@@ -716,7 +716,7 @@ def format_text(report: dict) -> str:
 
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Suggest a minimum risk tier and flag weakened tests and likely secrets in a change.",
+        description="Flag review cues, weakened tests and likely secrets in a change.",
     )
     source = parser.add_mutually_exclusive_group()
     source.add_argument("--staged", action="store_true", help="scan staged changes only")

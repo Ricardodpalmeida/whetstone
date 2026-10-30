@@ -1,22 +1,82 @@
 [
-  { "query": "can u fix the null pointer thing in OrderService when the cart is empty", "should_trigger": true },
-  { "query": "Add a CSV export button to the reports page in our React app", "should_trigger": true },
-  { "query": "We need to store users' phone numbers for two-factor login. Update the schema and the signup flow.", "should_trigger": true },
-  { "query": "here's my PR diff, is it safe to merge?", "should_trigger": true },
-  { "query": "the nightly ETL job doubled yesterday's revenue numbers, figure out why and fix it", "should_trigger": true },
-  { "query": "Write a GitHub Actions workflow that deploys our API to staging on every merge to main", "should_trigger": true },
-  { "query": "refactor this 600-line utils.py into something sane without changing behaviour", "should_trigger": true },
-  { "query": "Add rate limiting to the public /search endpoint, we're getting hammered", "should_trigger": true },
-  { "query": "set up an MCP server so our agent can query the orders database", "should_trigger": true },
-  { "query": "Upgrade Django from 4.2 to 5.1 and make sure nothing breaks", "should_trigger": true },
-  { "query": "Explain the difference between OAuth and OpenID Connect in simple terms", "should_trigger": false },
-  { "query": "Write a cover letter for a senior software engineer job", "should_trigger": false },
-  { "query": "What's the worst-case time complexity of quicksort?", "should_trigger": false },
-  { "query": "Summarise this incident postmortem PDF for an executive audience", "should_trigger": false },
-  { "query": "Draft a LinkedIn post about our team's move to trunk-based development", "should_trigger": false },
-  { "query": "Make a slide deck explaining our Q3 engineering roadmap", "should_trigger": false },
-  { "query": "Which is better for a beginner, Python or JavaScript?", "should_trigger": false },
-  { "query": "Create a spreadsheet tracking our team's on-call rotation for next month", "should_trigger": false },
-  { "query": "What does HTTP status 429 mean?", "should_trigger": false },
-  { "query": "Brainstorm names for our new internal developer platform", "should_trigger": false }
+  {
+    "query": "Use Whetstone to review this small patch before I merge it",
+    "should_trigger": true
+  },
+  {
+    "query": "Rename a live database column while old application instances are still running",
+    "should_trigger": true
+  },
+  {
+    "query": "The checkout timed out after charging the card; make retries safe",
+    "should_trigger": true
+  },
+  {
+    "query": "Make this API change without breaking our existing mobile clients",
+    "should_trigger": true
+  },
+  {
+    "query": "Our document assistant sometimes returns another team's confidential records",
+    "should_trigger": true
+  },
+  {
+    "query": "Review this production infrastructure plan for unsafe replacements",
+    "should_trigger": true
+  },
+  {
+    "query": "Add sign-in with Google while preserving existing accounts and sessions",
+    "should_trigger": true
+  },
+  {
+    "query": "A nightly data job doubled revenue after it restarted; find and fix the cause",
+    "should_trigger": true
+  },
+  {
+    "query": "Build an agent that can read customer email and issue refunds",
+    "should_trigger": true
+  },
+  {
+    "query": "Verify that this release can be rolled back without losing data",
+    "should_trigger": true
+  },
+  {
+    "query": "Fix recieve to receive in README",
+    "should_trigger": false
+  },
+  {
+    "query": "Rename this local variable to make it clearer",
+    "should_trigger": false
+  },
+  {
+    "query": "Write a small throwaway example using the installed framework and synthetic data",
+    "should_trigger": false
+  },
+  {
+    "query": "Change the button text from Save to Apply",
+    "should_trigger": false
+  },
+  {
+    "query": "Explain OAuth versus OpenID Connect",
+    "should_trigger": false
+  },
+  {
+    "query": "Format this JSON snippet",
+    "should_trigger": false
+  },
+  {
+    "query": "Write a cover letter for a programmer",
+    "should_trigger": false
+  },
+  {
+    "query": "Make a slide deck of our engineering roadmap",
+    "should_trigger": false
+  },
+  {
+    "query": "Add two numbers in a standalone Python example",
+    "should_trigger": false
+  },
+  {
+    "query": "Summarise this incident report for a nontechnical reader",
+    "should_trigger": false
+  }
 ]

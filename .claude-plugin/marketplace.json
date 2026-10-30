@@ -1,6 +1,6 @@
 {
   "name": "whetstone",
-  "description": "Whetstone: risk-scaled engineering standards for coding agents, packaged as one Agent Skill.",
+  "description": "Whetstone: focused risk review and verification for consequential software changes.",
   "owner": {
     "name": "Ricardo Almeida",
     "url": "https://github.com/Ricardodpalmeida"
@@ -9,9 +9,15 @@
     {
       "name": "whetstone",
       "source": "./",
-      "description": "Engineering standards that scale ceremony to risk: rules, a T0 to T3 tier model, 25 on-demand references, 7 templates and a change scanner.",
+      "description": "Impact-based review, nine focused references, an optional change note and a diff scanner. Routine edits stay routine.",
       "category": "development",
-      "tags": ["engineering-standards", "code-review", "testing", "security", "agent-skills"]
+      "tags": [
+        "engineering-standards",
+        "code-review",
+        "testing",
+        "security",
+        "agent-skills"
+      ]
     }
   ]
 }
