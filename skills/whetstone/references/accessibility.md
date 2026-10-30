@@ -1,6 +1,6 @@
 # Accessibility
 
-Read this for any change to a user interface: web pages, single-page apps, mobile and desktop screens, emails and documents generated for users, and low-code apps. The target is WCAG 2.2 Level AA unless the project states a stricter one.
+Use for UI changes: web pages, single-page apps, mobile/desktop screens, generated emails/documents and low-code apps. Target WCAG 2.2 Level AA, or the project's stricter standard.
 
 ## Contents
 
@@ -16,15 +16,13 @@ Read this for any change to a user interface: web pages, single-page apps, mobil
 
 ## Know the target
 
-WCAG 2.2 is the current W3C Recommendation (updated 12 December 2024) and is also published as ISO/IEC 40500:2025. Content that meets WCAG 2.2 also meets 2.1 and 2.0. In the European Union, the European Accessibility Act has applied since 28 June 2025 to many consumer products and services, including e-commerce, banking services and e-books, so accessibility is a legal requirement for many products, not only good practice.
+WCAG 2.2 is the current W3C Recommendation (updated 12 December 2024), also ISO/IEC 40500:2025; conformance includes 2.1 and 2.0. Since 28 June 2025, the European Accessibility Act makes accessibility mandatory for many EU consumer products/services, including e-commerce, banking and e-books.
 
-Accessibility is part of the definition of done for UI work. Retrofitting it after release costs far more than building it in.
+Accessibility is required for UI completion; retrofitting after release costs far more.
 
 ## Use native semantics first
 
-The ARIA Authoring Practices Guide (APG) opens with the principle "No ARIA is better than Bad ARIA": ARIA roles change what assistive technology announces, but they add no keyboard behaviour or styling.
-
-Apply it:
+The ARIA Authoring Practices Guide (APG) warns: "No ARIA is better than Bad ARIA". Roles affect assistive announcements, not keyboard behaviour or styling.
 
 1. Use the native element for the job: `<button>` for actions, `<a href>` for navigation, `<label>` with form controls, `<table>` for tabular data, headings in order, landmarks (`<main>`, `<nav>`, `<header>`, `<footer>`).
 2. Add ARIA only when no native element fits, and then implement the full keyboard behaviour that the role promises.
@@ -45,16 +43,12 @@ Good:
 
 ## Make everything work with a keyboard
 
-Apply it:
-
 1. Make every function available from the keyboard, with a logical focus order and no keyboard traps.
 2. Keep the focus indicator visible, and make sure sticky headers, banners and chat widgets do not entirely hide the focused element.
 3. For a modal dialog, prefer the native `<dialog>` element opened with `showModal()`, which makes the rest of the page inert and closes on Escape. A custom dialog needs the full APG dialog pattern: `role="dialog"`, `aria-modal="true"` and a name through `aria-labelledby`, focus moved into the dialog when it opens, Tab and Shift+Tab kept inside it, Escape to close. Either way, check that focus returns to the control that opened it.
 4. When content changes after an action (a route change, a deleted row), move focus somewhere sensible instead of leaving it on a removed element.
 
 ## Name, label and announce
-
-Apply it:
 
 1. Give every control an accessible name that matches or contains its visible label.
 2. Give every informative image a text alternative that conveys its purpose; give decorative images an empty `alt=""`.
@@ -79,8 +73,6 @@ Apply it:
 
 ## Support every way of interacting
 
-Apply it:
-
 1. Provide a single-pointer alternative for any dragging interaction, such as buttons to reorder items (2.5.7 Dragging Movements, AA).
 2. Never make authentication depend on memorising, transcribing or solving something without an alternative (3.3.8 Accessible Authentication (Minimum), AA). Allow paste and password managers, and let users paste one-time codes.
 3. Do not ask for information the user already gave in the same process; prefill it or let them select it (3.3.7 Redundant Entry, A).
@@ -90,9 +82,7 @@ Apply it:
 
 ## Test with tools and by hand
 
-The W3C states that evaluation tools cannot determine accessibility, only assist in doing so. The axe-core project claims its rules find on average 57 percent of WCAG issues automatically; the rest need a human.
-
-Apply it:
+W3C says tools assist accessibility evaluation but cannot determine conformance. Axe-core claims automatic detection of 57 percent of WCAG issues on average; the rest need human checks.
 
 1. Run an automated checker in the test suite, for example axe-core through `@axe-core/playwright`, filtered to the WCAG A and AA tags including `wcag22aa`. Treat new violations as test failures.
 2. Write component tests that find elements by role and accessible name, so the tests fail when semantics break.
@@ -101,8 +91,6 @@ Apply it:
 5. For T2 and above UI changes, do a short screen reader pass (for example NVDA on Windows or VoiceOver on macOS and iOS) of the main flow, listening for names, roles, states and announcements.
 6. Report what you could not test. An agent without a screen reader must say so instead of claiming conformance.
 
-Check:
-
 - [ ] No new automated violations at WCAG 2.2 A and AA.
 - [ ] Every changed flow works with the keyboard alone, with visible focus.
 - [ ] Contrast, reflow and target size meet the thresholds above.
@@ -110,12 +98,12 @@ Check:
 
 ## Failure modes
 
-- Clickable `div` elements that a mouse can use and a keyboard cannot reach.
-- ARIA added to "fix" a widget, which now announces a role whose keyboard behaviour is missing.
-- A modal that lets focus escape behind it, or that never returns focus on close.
-- Placeholder text used as the only label, which disappears as soon as the user types.
-- An automated scan passes, and the team declares the page accessible without a single manual check.
-- A login form that blocks paste, which fails the accessible authentication criterion and annoys every password manager user.
+- Mouse-clickable `div` elements unreachable by keyboard.
+- ARIA roles announced without their required keyboard behaviour.
+- Modals that let focus escape or fail to return it on close.
+- Placeholder-only labels that disappear when typing starts.
+- Declaring accessibility after an automated scan without manual checks.
+- Login forms blocking paste, violating accessible authentication and obstructing password managers.
 
 ## Sources
 

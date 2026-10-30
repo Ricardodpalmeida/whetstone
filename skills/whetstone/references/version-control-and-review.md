@@ -1,6 +1,6 @@
 # Version control and code review
 
-Read this when you commit, branch, open or describe a pull request, respond to review comments, or review someone else's change.
+Use for commits, branches, PRs and review responses or reviews of others' changes.
 
 ## Contents
 
@@ -26,9 +26,7 @@ Read this when you commit, branch, open or describe a pull request, respond to r
 
 ## Keep each change small and single-purpose
 
-Google's engineering practices put it this way: "100 lines is usually a reasonable size for a CL, and 1000 lines is usually too large", and the right size is "one self-contained change". Small changes are reviewed faster and more thoroughly, and are easier to revert.
-
-Apply it:
+Google recommends "one self-contained change": 100 lines is usually reasonable; 1000 is usually too large. Small changes improve review speed/depth and rollback.
 
 1. Give each pull request one purpose. Separate refactoring, formatting and dependency updates from behaviour changes.
 2. Include the tests for the change in the same pull request.
@@ -37,9 +35,7 @@ Apply it:
 
 ## Write commit messages that explain why
 
-The commit history is the only place that permanently records why the code changed.
-
-Apply it:
+Commit history permanently records why code changed.
 
 1. Write a subject line of about 50 characters (72 at most) in the imperative mood ("Add retry budget to payment client"), with no trailing period.
 2. Leave a blank line, then a body wrapped at about 72 characters that explains what changed and why, not how.
@@ -67,9 +63,7 @@ Refs: #1842
 
 ## Integrate often
 
-Trunk-based development keeps everyone working close to a single main branch. DORA's research associates better delivery performance with having three or fewer active branches, merging to trunk at least once a day, and avoiding code freezes and integration phases.
-
-Apply it:
+Trunk-based development stays close to main. DORA associates better delivery with three or fewer active branches, daily trunk merges, and no code freezes or integration phases.
 
 1. Keep branches short-lived: hours or a few days, not weeks.
 2. Merge or rebase from the main branch frequently, following the repository's preferred method, and resolve conflicts while they are small.
@@ -77,9 +71,7 @@ Apply it:
 
 ## Describe the pull request
 
-Use [the pull request template](../templates/pull-request.md). Google's guidance on change descriptions asks for a first line that summarises the change as an imperative sentence, and a body that explains what changed, why, and any shortcomings, with enough context that a future reader does not depend on external links.
-
-Apply it:
+Use the [PR template](../templates/pull-request.md): imperative summary, then what changed, why and limitations. Google's guidance calls for enough lasting context without depending on external links.
 
 1. State the goal and the tier, and link the issue.
 2. Explain the approach and the alternatives you rejected when they were not obvious.
@@ -90,9 +82,7 @@ Apply it:
 
 ## Review your own diff first
 
-Before you ask anyone else to review, read the full diff as a reviewer would.
-
-Check:
+Review the full diff before requesting review.
 
 - [ ] Every changed line serves the stated purpose; no unrelated edits slipped in.
 - [ ] No debug output, commented-out code, TODOs without issues, or secrets.
@@ -102,9 +92,7 @@ Check:
 
 ## Review other people's changes
 
-Google's code review standard says reviewers should favour approving a change once it definitely improves the overall health of the code, even if it is not perfect.
-
-Apply it:
+Google's review standard favours approval when code health definitely improves, even without perfection.
 
 1. Look at design first, then functionality and edge cases, complexity, tests, naming, comments, style and documentation. Read every line you are responsible for.
 2. Check the change against the threat model, accessibility and observability expectations of its tier.
@@ -116,8 +104,6 @@ Apply it:
 
 ## Respond to review
 
-Apply it:
-
 1. Address every comment: change the code, or explain why not. Do not silently ignore one.
 2. Push follow-up commits during review unless the repository prefers amended commits, so reviewers can see what changed since they last looked.
 3. Resolve a thread only when the concern is actually addressed.
@@ -125,11 +111,11 @@ Apply it:
 
 ## Failure modes
 
-- A 3,000-line pull request mixes a refactor, a feature and a dependency upgrade, gets a rubber-stamp approval, and cannot be reverted cleanly.
-- Commit messages say "wip" and "fix", so nobody can later tell why a line exists.
-- An agent runs `git add .` and commits a `.env` file with production credentials.
-- A long-lived feature branch diverges for weeks and the merge introduces subtle regressions.
-- Review comments demand perfection, so changes stall and authors stop asking for review.
+- A rubber-stamped 3,000-line PR mixing refactors, features and dependencies resists clean rollback.
+- "wip"/"fix" commits leave future readers without rationale.
+- `git add .` commits `.env` production credentials.
+- Weeks of branch divergence produce subtle merge regressions.
+- Perfectionist reviews stall changes and discourage review requests.
 
 ## Sources
 

@@ -1,6 +1,6 @@
 # API design
 
-Read this when you add or change an interface that other code depends on: HTTP APIs, events and messages, webhooks, public library functions, command-line flags and configuration formats.
+Use for interfaces other code depends on: HTTP APIs, events/messages, webhooks, public library functions, CLI flags and configuration formats.
 
 ## Contents
 
@@ -18,16 +18,12 @@ Read this when you add or change an interface that other code depends on: HTTP A
 
 ## Design the contract first
 
-Apply it:
-
 1. Write or update the machine-readable contract before the implementation: OpenAPI 3.1 or later for HTTP APIs, AsyncAPI for event-driven interfaces.
 2. Review the contract as the main artefact of the change. Ask whether a client developer could use it correctly without reading your code.
 3. Generate reference documentation, and client code where useful, from the contract, and validate requests and responses against it in tests (see [testing.md](testing.md)).
 4. Treat a new public API as T2 or above, and a change to a public contract as T3 when it can break existing consumers.
 
 ## Model resources consistently
-
-Apply it:
 
 1. Name resources with plural nouns and use consistent casing for paths and fields across the API. Follow the existing API's conventions over your preferences.
 2. Use opaque, stable identifiers. Never expose sequential database keys when enumeration would leak information.
@@ -60,13 +56,11 @@ Apply it:
 | 429 | The caller exceeded a rate limit; include `Retry-After` |
 | 500, 503 | A server fault, or temporary unavailability (with `Retry-After` when known) |
 
-Use conditional requests to prevent lost updates: return an `ETag`, require `If-Match` on updates, and answer 412 when it no longer matches.
+Prevent lost updates: return an `ETag`, require `If-Match` on updates, return 412 on mismatch.
 
 ## Return errors as problem details
 
-RFC 9457 (which obsoletes RFC 7807) defines a standard error body with the media type `application/problem+json`.
-
-Apply it:
+RFC 9457 supersedes RFC 7807 and defines `application/problem+json` error bodies.
 
 1. Return the members `type` (a URI identifying the problem type, defaulting to `about:blank`), `title`, `status`, `detail` and `instance`.
 2. Write `detail` to help the client fix the request, not to debug the server. Never include stack traces, SQL or internal hostnames.
@@ -85,9 +79,7 @@ Apply it:
 
 ## Make writes safe to retry
 
-Clients retry after timeouts, and a timeout does not tell them whether the first attempt succeeded. The IETF Idempotency-Key header draft (draft-ietf-httpapi-idempotency-key-header-08, still an Internet-Draft) describes the common pattern.
-
-Apply it:
+Clients retry after timeouts without knowing whether the first attempt succeeded. The Idempotency-Key pattern remains an Internet-Draft: draft-ietf-httpapi-idempotency-key-header-08.
 
 1. Accept an `Idempotency-Key` header on non-idempotent operations that create or charge, and recommend a random UUID per logical operation.
 2. Store the key with a fingerprint of the request and the response. On a repeat with the same key and payload, return the stored response without repeating the side effect.
@@ -96,9 +88,7 @@ Apply it:
 
 ## Paginate from the start
 
-Google's AIP-158 points out that adding pagination to an existing list endpoint is a breaking change, so design it in from the first version.
-
-Apply it:
+Design pagination into the first version: Google's AIP-158 classifies adding it to an existing list endpoint as breaking.
 
 1. Use opaque cursor tokens rather than offsets for collections that change, so items are not skipped or repeated.
 2. Accept a page size with a documented default and maximum, and clamp larger values to the maximum.
@@ -107,7 +97,7 @@ Apply it:
 
 ## Evolve without breaking clients
 
-Hyrum's Law warns that with enough users, "all observable behaviors of your system will be depended on by somebody". Treat anything observable as part of the contract.
+Treat all observable behaviour as contract. Hyrum's Law: "all observable behaviors of your system will be depended on by somebody" given enough users.
 
 | Usually compatible | Breaking |
 |---|---|
@@ -117,15 +107,11 @@ Hyrum's Law warns that with enough users, "all observable behaviors of your syst
 | Adding a new optional header | Changing semantics, status codes or error types clients rely on |
 | | Adding enumeration values to responses when clients were not told to tolerate them |
 
-Apply it:
-
 1. Make additive changes where possible, and use parallel change (add the new form, migrate clients, remove the old form) for the rest.
 2. Introduce a new major version only for unavoidable breaking changes, run both versions during the migration, and keep the version scheme the API already uses.
 3. Check every contract change with an automated compatibility diff of the OpenAPI or schema files in CI.
 
 ## Deprecate deliberately
-
-Apply it:
 
 1. Announce deprecation with the `Deprecation` response header (RFC 9745), whose value is a structured date in Unix seconds (for example `@1814399999`, which is 30 June 2027 at 23:59:59 UTC), and link to migration information with a `Link` header using the `deprecation` relation.
 2. Announce the shutdown date with the `Sunset` header (RFC 8594), an HTTP date such as `Sunset: Fri, 31 Dec 2027 23:59:59 GMT`, which must not be earlier than the deprecation date.
@@ -134,16 +120,12 @@ Apply it:
 
 ## Design events, webhooks and long-running operations
 
-Apply it:
-
 1. Give each event a unique identifier, a type, a schema version, the time it happened and the identifier of the entity it concerns. Version event schemas like any other contract.
 2. Assume at-least-once delivery and possible reordering. Consumers deduplicate by event identifier and tolerate events that arrive out of order.
 3. Publish events from database changes with the transactional outbox pattern: write the event to an outbox table in the same transaction as the change, and let a relay publish it. This avoids losing events or announcing changes that rolled back.
 4. Sign webhook payloads (for example with an HMAC over a timestamp and the body), reject stale timestamps, retry failed deliveries with backoff, and let receivers fetch missed events.
 5. For operations that take longer than a normal request, return 202 with a status resource the client can poll, and make the final result retrievable.
 6. Protect every API with authentication, object-level authorisation, rate limits and request size limits, as described in [security.md](security.md).
-
-Check:
 
 - [ ] The contract file changed in the same PR as the behaviour, and a compatibility check ran.
 - [ ] Errors use problem details without internal information.
@@ -152,11 +134,11 @@ Check:
 
 ## Failure modes
 
-- A field is renamed for consistency and every mobile client still in use breaks.
-- A list endpoint returns everything, works in testing, and times out once a customer has 200,000 records.
-- A client retries a timed-out payment request and the customer is charged twice.
-- Errors return HTML stack traces from the framework's default handler.
-- An event is published before the transaction commits, the transaction rolls back, and downstream systems act on something that never happened.
+- Renaming a field breaks deployed mobile clients.
+- Unbounded lists pass tests but time out at 200,000 customer records.
+- Retrying a timed-out payment charges twice.
+- Default error handlers expose HTML stack traces.
+- Publishing before commit makes downstream systems act on rolled-back changes.
 
 ## Sources
 

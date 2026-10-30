@@ -1,6 +1,6 @@
 # Understanding the ask
 
-Read this before building anything above tier T0, when a request is vague, large or contradictory, or when someone asks you to stress-test a plan.
+Use before building above T0, for vague/large/contradictory requests, or to stress-test plans.
 
 ## Contents
 
@@ -16,22 +16,18 @@ Read this before building anything above tier T0, when a request is vague, large
 
 ## Restate the goal
 
-Write one sentence that names who benefits, what changes for them and how anyone will know it worked. If you cannot write it, you do not understand the ask yet.
-
-Apply it:
+State who benefits, what changes and how success is observed in one sentence. Inability to do so signals an unclear ask.
 
 1. Classify the ask: bug fix, feature, refactor, investigation, review, migration or spike. Each has a different output. An investigation ends in findings, not code; a spike ends in a decision and is thrown away.
 2. Look for the problem behind a solution-shaped request. "Add a cache" usually means "this page is slow". Confirm the underlying problem before you build the named solution.
 3. If you see a materially better route to the same goal, propose it before building. Never silently swap the requested solution for your own.
-
-Check:
 
 - [ ] The one-sentence goal is written in the plan, PR or chat.
 - [ ] The type of ask is clear, and so is what "done" produces.
 
 ## Decide whether to ask or proceed
 
-Ask only when the answer changes what you build, you cannot discover it yourself, and a wrong guess is costly to undo. Otherwise proceed and state the assumption.
+Ask only when the answer changes implementation, cannot be discovered, and a wrong guess is costly. Otherwise proceed with a stated assumption.
 
 | Situation | Do |
 |---|---|
@@ -44,9 +40,7 @@ Ask only when the answer changes what you build, you cannot discover it yourself
 
 ## Ask questions that earn their cost
 
-A good question can be answered in seconds and visibly changes the work.
-
-Apply it:
+Questions should take seconds to answer and change the work.
 
 1. Batch questions into one message and number them.
 2. Order them by dependency: ask first the questions whose answers decide which other questions matter.
@@ -71,9 +65,7 @@ Good:
 
 ## Interrogate a plan before building
 
-Use this when asked to review or "grill" a plan, and before any T3 work. The goal is that nothing important is silently assumed.
-
-Apply it:
+Before T3 work or a requested plan review, expose every consequential assumption.
 
 1. List every decision the plan makes or implies, including implicit ones: data ownership, failure behaviour, who operates it, how it is removed later.
 2. Arrange the decisions by dependency. Settle goal, users and constraints before schema, libraries and naming.
@@ -82,13 +74,11 @@ Apply it:
 5. Work in rounds. Ask the questions that are answerable now, each with a recommended answer, wait for replies, then recompute which questions are unlocked.
 6. Stop when every decision is decided by the owner, backed by evidence, or recorded as an assumption with someone responsible for checking it.
 
-Output a decision list with three groups (decided, assumed, open). It feeds the acceptance criteria and the design one-pager.
+Group decisions as decided, assumed or open; feed them into acceptance criteria and the design one-pager.
 
 ## Write acceptance criteria
 
-Each criterion is an observable, testable statement, and each one maps to a verification: an automated test, a manual check or a metric.
-
-Apply it:
+Each criterion must be observable, testable and mapped to an automated test, manual check or metric.
 
 1. Write criteria as Given/When/Then statements or as a checklist.
 2. Include negative paths: unauthorised caller, invalid input, empty state, dependency failure, concurrent edits.
@@ -108,16 +98,12 @@ Then they receive 403 and no report data
 Verification: API tests for both cases; manual check that the file opens cleanly in a spreadsheet application
 ```
 
-Check:
-
 - [ ] Every criterion can fail. "Works well" and "is fast" cannot fail, so replace them with measurable statements.
 - [ ] At least one negative path is covered for T2 and above.
 
 ## Control scope
 
-One change has one purpose. Scope creep is the most common way a small task becomes a risky one.
-
-Apply it:
+One change, one purpose. Scope creep commonly turns small tasks risky.
 
 1. Write non-goals next to the goal.
 2. Keep refactors, formatting, renames and dependency bumps out of a behaviour change. Do them in their own change, or list them as follow-ups.
@@ -127,16 +113,16 @@ Apply it:
 
 ## Keep an assumptions log
 
-For every assumption record the statement, why it is reasonable, how to verify it, and the impact if it is wrong. Put the log in the PR description or the final report so a reviewer can challenge it. An assumption that would be expensive if wrong is a question, not an assumption: ask it.
+Log each assumption, rationale, verification and impact if wrong in the PR or final report for review. Ask instead when being wrong would be expensive.
 
 ## Failure modes
 
-- The agent builds exactly what was literally asked, and it does not solve the actual problem.
-- The agent asks questions the repository could have answered, which wastes the human's attention and erodes trust.
-- The agent sends fifteen open-ended questions at once with no defaults, so nobody answers them.
-- An assumption is made silently and surfaces only in production.
-- Features or configuration options nobody asked for are added "for flexibility".
-- "While I'm here" edits mix unrelated changes into the diff and make review and rollback harder.
+- Literal implementation misses the underlying problem.
+- Repository-answerable questions waste attention and trust.
+- Fifteen open-ended questions without defaults go unanswered.
+- Silent assumptions surface only in production.
+- Unrequested features/configuration added "for flexibility".
+- Unrelated "while I'm here" edits complicate review and rollback.
 
 ## Sources
 

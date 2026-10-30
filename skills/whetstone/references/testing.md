@@ -1,6 +1,6 @@
 # Testing
 
-Read this when you add or change behaviour, fix a bug, or decide how much testing a change needs.
+Use for behaviour changes, bug fixes and choosing test scope.
 
 ## Contents
 
@@ -20,7 +20,7 @@ Read this when you add or change behaviour, fix a bug, or decide how much testin
 
 ## Decide what to test
 
-Test everything you would not want to break. Google's testing book calls this the Beyoncé Rule: "If you liked it, then you shoulda put a test on it."
+Test what must not break. Google's Beyoncé Rule: "If you liked it, then you shoulda put a test on it."
 
 | Tier | Minimum testing |
 |---|---|
@@ -29,11 +29,11 @@ Test everything you would not want to break. Google's testing book calls this th
 | T2 | Unit and integration tests for the new behaviour, including negative paths. A regression test for every bug fix. |
 | T3 | T2 plus end-to-end tests of critical journeys, contract tests for changed interfaces, tests for each threat-model mitigation, load tests where an SLO is at stake, and a rehearsed migration and rollback. |
 
-Spend effort where defects are likely or costly: complex logic, money, permissions, data transformations, concurrency, and code that changes often.
+Prioritise likely/costly defects: complex logic, money, permissions, transformations, concurrency and frequently changed code.
 
 ## Choose the level
 
-The test pyramid's two rules are to "write tests with different granularity" and to have fewer tests the higher the level. The testing trophy weights integration tests more heavily for front-end code. Both agree on the goal: the most confidence per unit of time.
+The test pyramid uses multiple granularities with fewer higher-level tests; the frontend testing trophy favours integration. Both optimise confidence per unit of time.
 
 | Level | Use it for | Keep it |
 |---|---|---|
@@ -43,11 +43,11 @@ The test pyramid's two rules are to "write tests with different granularity" and
 | Contract | Agreement between a consumer and a provider | Run in both pipelines |
 | End-to-end | A few critical user journeys | Few, stable, owned |
 
-Prefer a real dependency in a container over a mock of it when the integration itself is what could break, for example SQL queries, serialisation and migrations.
+Prefer real containerised dependencies over mocks when testing integration itself: SQL, serialisation or migrations.
 
 ## Write the test first when it helps
 
-Test-first works best for bug fixes (the reproduction is the test) and for logic with clear inputs and outputs. Kent Beck's "Canon TDD" describes the loop:
+Test-first fits reproducible bugs and logic with clear inputs/outputs. Kent Beck's "Canon TDD" loop:
 
 1. Write a list of the behaviours to cover, including existing behaviour that must not break.
 2. Turn one item into a real test, with setup, action and assertions.
@@ -56,8 +56,6 @@ Test-first works best for bug fixes (the reproduction is the test) and for logic
 5. Repeat until the list is empty.
 
 ## Write tests that earn trust
-
-Apply it:
 
 1. Test behaviour through public interfaces, not private implementation details, so refactoring does not break tests.
 2. Give each test one reason to fail and a name that states the behaviour: `rejects_expired_token`, not `test_token_3`.
@@ -69,9 +67,7 @@ Apply it:
 
 ## Use test doubles sparingly
 
-Martin Fowler's taxonomy distinguishes dummies, fakes, stubs, spies and mocks. Pick the weakest one that does the job.
-
-Apply it:
+Fowler distinguishes dummies, fakes, stubs, spies and mocks. Use the weakest sufficient double.
 
 1. Prefer real objects, then fakes (working lightweight implementations such as an in-memory repository), then stubs. Use mocks that verify calls only when the call itself is the behaviour, for example "sends exactly one email".
 2. Double only at boundaries you control. Wrap third-party clients in a thin adapter of your own and double the adapter.
@@ -79,30 +75,26 @@ Apply it:
 
 ## Cover the edges
 
-For each input, consider: empty, single, many, maximum size, boundary values on both sides, null or missing, wrong type, duplicate, non-ASCII text, and malicious content.
+Inputs: empty, single, many, maximum size, both sides of boundaries, null/missing, wrong type, duplicates, non-ASCII and malicious content.
 
-For each dependency, consider: success, slow response, timeout, error response, malformed response and partial failure.
+Dependencies: success, slow response, timeout, errors, malformed responses and partial failure.
 
-For each operation, consider: unauthenticated caller, caller without permission, a caller from another tenant, concurrent modification, retry of the same request, and behaviour across time zone and daylight-saving boundaries.
+Operations: unauthenticated, unauthorised and cross-tenant callers; concurrent modification; retries; time-zone and daylight-saving boundaries.
 
 ## Generate inputs with property-based tests
 
-Property-based tests generate many inputs and shrink failures to a minimal case. Use them for parsers, serialisers, encoders, sorting and pricing rules, and anything with an inverse.
+Property-based tests generate inputs and shrink failures. Use for parsers, serialisers, encoders, sorting, pricing and inverse operations.
 
-Useful properties include round-tripping (`decode(encode(x)) == x`), invariants (a total is never negative), idempotence (normalising twice equals normalising once) and agreement with a simpler reference implementation. Libraries exist for most stacks, such as Hypothesis for Python, fast-check for JavaScript and TypeScript, and FsCheck for .NET.
+Properties: round-tripping (`decode(encode(x)) == x`), invariants (non-negative totals), idempotence (normalise twice = once), and agreement with a simpler reference. Libraries include Python's Hypothesis, JS/TS fast-check and .NET FsCheck.
 
 ## Check contracts between services
-
-Apply it:
 
 1. When you own both sides or know every consumer, use consumer-driven contract tests (for example Pact), so a provider learns before deploying that it would break a consumer.
 2. For public APIs with unknown consumers, validate requests and responses against the published schema (OpenAPI or AsyncAPI) in the provider's test suite, and check every change for backward compatibility (see [api-design.md](api-design.md)).
 
 ## Measure test quality
 
-Coverage shows which code ran, not whether it was checked. Google's testing blog offers 60 percent as acceptable, 75 percent as commendable and 90 percent as exemplary for a project, suggests that 90 percent coverage of each change's lines is a good lower threshold, and warns that a target can turn into a checkbox.
-
-Apply it:
+Coverage measures execution, not assertions. Google's testing blog suggests 60 percent acceptable, 75 commendable and 90 exemplary overall; 90 percent of changed lines as a lower threshold. Avoid checkbox targets.
 
 1. Look at coverage of the lines you changed and read what is uncovered. Each uncovered branch is either a missing test or dead code.
 2. Run mutation testing (for example mutmut for Python or Stryker for JavaScript, TypeScript and C#) on critical modules. A surviving mutant points to an assertion that is missing.
@@ -110,9 +102,7 @@ Apply it:
 
 ## Keep the suite trustworthy
 
-A flaky test passes and fails on the same code. Google reported that almost 16 percent of its tests showed some flakiness and that about 84 percent of pass-to-fail transitions in post-submit testing involved a flaky test. Flakiness teaches people to ignore red builds.
-
-Apply it:
+Flaky tests vary on unchanged code. Google reported almost 16 percent showing flakiness and about 84 percent of post-submit pass-to-fail transitions involving flaky tests. This erodes trust in red builds.
 
 1. Treat a flaky test as a bug. Reproduce it in a loop and find the cause with [debugging.md](debugging.md).
 2. If a test must be quarantined to unblock others, agree it with the user, file an issue with an owner and a date, and keep running the test outside the blocking path.
@@ -121,9 +111,7 @@ Apply it:
 
 ## Never weaken a test to pass
 
-These are forbidden unless the user explicitly agrees and the reason is in the PR: deleting or loosening assertions, skipping or disabling tests, widening tolerances or timeouts without a measured cause, catching exceptions inside a test to keep it green, editing snapshots without reviewing the difference, and changing expected values to match new output without explaining why the old expectation was wrong. When behaviour changes on purpose, update the test in the same change and state the intended change.
-
-Check:
+Require explicit user agreement and a PR rationale before deleting/loosening assertions, skipping/disabling tests, widening tolerances/timeouts without measured cause, catching test exceptions to stay green, editing snapshots without diff review, or matching expected values to new output without explaining why the old expectation was wrong. Intentional behaviour changes require corresponding tests and an explanation in the same change.
 
 - [ ] Every new behaviour has a test that fails without the change.
 - [ ] Every bug fix has a regression test that failed before the fix.
@@ -132,11 +120,11 @@ Check:
 
 ## Failure modes
 
-- Every collaborator is mocked, the unit tests pass, and the system fails at the first real integration.
-- Tests assert on implementation details, so every refactor breaks dozens of them and people stop refactoring.
-- Coverage is high but assertions are weak, and a mutation run shows that most changes to the code go unnoticed.
-- Flaky tests are retried until green, and the build no longer means anything.
-- An agent changes the expected value in an assertion to match its new, wrong output.
+- Mocking every collaborator hides real integration failures.
+- Implementation-coupled assertions break dozens of tests per refactor and discourage refactoring.
+- High coverage with weak assertions lets most mutations survive.
+- Retrying flaky tests to green makes builds meaningless.
+- Changing assertions to match incorrect new output.
 
 ## Sources
 

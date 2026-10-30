@@ -1,6 +1,6 @@
 # Supply chain
 
-Read this when you add, upgrade or remove a dependency, change a build or CI/CD pipeline, or publish an artefact. OWASP ranks Software Supply Chain Failures third in its Top 10:2025.
+Use for dependency changes, build/CI/CD changes and artefact publication. Software Supply Chain Failures ranks third in OWASP Top 10:2025.
 
 ## Contents
 
@@ -18,9 +18,7 @@ Read this when you add, upgrade or remove a dependency, change a build or CI/CD 
 
 ## Decide whether you need the dependency
 
-Every dependency is code you run without having written or reviewed it, plus everything it depends on.
-
-Apply it:
+Dependencies run others' unreviewed code plus their transitive dependencies.
 
 1. Check whether the standard library, the framework or an existing dependency already does the job.
 2. Write a small function yourself when the need is a few lines of well-understood code. Do not add a package for padding a string or checking a type.
@@ -28,9 +26,7 @@ Apply it:
 
 ## Confirm the package is real
 
-Language models invent package names. A USENIX Security 2025 study of 16 code-generating models found hallucinated package names in at least 5.2 percent of samples from commercial models and 21.7 percent from open-source models. Attackers register such names, and look-alike names of popular packages, to deliver malware.
-
-Apply it:
+Models invent package names: a USENIX Security 2025 study of 16 models found them in at least 5.2 percent of commercial-model samples and 21.7 percent of open-source-model samples. Attackers register these and popular-package lookalikes to distribute malware.
 
 1. Before installing anything, confirm the exact name in the official registry and on the project's own website or repository. Check that the repository links back to the package.
 2. Compare the name character by character with the package you meant. Watch for transposed letters, swapped hyphens and underscores, and scope changes.
@@ -39,7 +35,7 @@ Apply it:
 
 ## Evaluate it before adopting it
 
-The OpenSSF "Concise Guide for Evaluating Open Source Software" gives a checklist. In short, check:
+OpenSSF's "Concise Guide for Evaluating Open Source Software" checklist:
 
 | Question | Evidence to look for |
 |---|---|
@@ -50,11 +46,9 @@ The OpenSSF "Concise Guide for Evaluating Open Source Software" gives a checklis
 | Is the licence clear and compatible? | A standard OSI-approved licence that fits your distribution model |
 | How does it score? | The OpenSSF Scorecard result, which checks items such as Maintained, Code-Review, Pinned-Dependencies, Token-Permissions and Vulnerabilities |
 
-Check transitive dependencies too: a small package that pulls in a hundred others is not small.
+Check transitive dependencies; a package pulling a hundred others is not small.
 
 ## Pin and lock
-
-Apply it:
 
 1. Commit the lockfile for every application, and install from it in CI and production with the package manager's frozen or locked mode, so builds are reproducible.
 2. Prefer lockfiles that record integrity hashes, and fail the install when a hash does not match.
@@ -63,9 +57,7 @@ Apply it:
 
 ## Update deliberately
 
-Staying current is a security control: old versions accumulate known vulnerabilities. Updating the moment a release appears is also a risk, because malicious releases are usually caught within days.
-
-Apply it:
+Old versions accumulate vulnerabilities, but immediate upgrades risk malicious releases, usually detected within days. Balance both risks.
 
 1. Use an update bot (for example Dependabot or Renovate) so updates arrive as small, reviewable PRs with release notes.
 2. Configure a waiting period before routine version updates. Dependabot's `cooldown` option defaults to 3 days for version updates and does not delay security updates; Renovate offers `minimumReleaseAge` for the same purpose.
@@ -75,8 +67,6 @@ Apply it:
 
 ## Scan and triage vulnerabilities
 
-Apply it:
-
 1. Run the ecosystem's audit in CI against the lockfile: for example `npm audit`, `pip-audit`, the NuGet audit that runs during `dotnet restore`, or OSV-Scanner across ecosystems using the OSV database.
 2. Triage each finding: is the vulnerable code reachable from your code, is a fixed version available, and what is the exposure?
 3. Upgrade when a fix exists. Otherwise mitigate (configuration, input restrictions, removing the feature) or accept the risk with an owner and an expiry date, and record the decision.
@@ -84,9 +74,7 @@ Apply it:
 
 ## Harden the pipeline
 
-The pipeline holds the keys to production, so it is an attack target.
-
-Apply it:
+Production credentials make pipelines attack targets.
 
 1. Set the default `GITHUB_TOKEN` (or the equivalent CI token) to read-only, and grant extra permissions per job only where needed.
 2. Pin third-party actions to a full-length commit SHA from the action's own repository, not a mutable tag.
@@ -97,8 +85,6 @@ Apply it:
 
 ## Know what you ship
 
-Apply it:
-
 1. Generate a software bill of materials (SBOM) for each release artefact, in CycloneDX (currently 1.7) or SPDX (currently 3.0) format, from the build itself rather than from a manifest guess.
 2. Produce build provenance. SLSA v1.2's Build track defines L1 (provenance exists), L2 (a hosted build platform generates and signs the provenance) and L3 (a hardened platform isolates builds and keeps signing secrets away from build steps). Hosted CI with signed provenance reaches L2.
 3. Sign release artefacts and container images (for example with Sigstore), and verify the signature and provenance before deploying.
@@ -106,13 +92,9 @@ Apply it:
 
 ## Respect licences
 
-Apply it:
-
 1. Check the licence of every new dependency against how you distribute the software. Copyleft licences can impose obligations on distributed or network-served code.
 2. Never paste code from a source whose licence you have not checked, and never paste code from incompatible licences into the codebase.
 3. Record attributions that a licence requires, in the project's notices file.
-
-Check:
 
 - [ ] Every new dependency is justified in the PR, verified as the genuine package, and evaluated.
 - [ ] The lockfile is committed and CI installs from it.
@@ -121,11 +103,11 @@ Check:
 
 ## Failure modes
 
-- An agent adds a dependency whose name it invented, and an attacker has already registered that name.
-- A floating version range pulls a compromised release into production on the next build.
-- A workflow triggered by an external pull request runs untrusted code with access to deployment secrets.
-- Vulnerability alerts pile up unread because the scanner fails builds on every low-severity advisory.
-- A copyleft dependency is shipped inside a proprietary product without anyone checking.
+- Attackers register model-invented package names before agents install them.
+- Floating versions pull compromised releases into the next production build.
+- External PR workflows execute untrusted code with deployment secrets.
+- Blocking every low-severity advisory causes ignored vulnerability alerts.
+- Unchecked copyleft dependencies ship in proprietary products.
 
 ## Sources
 

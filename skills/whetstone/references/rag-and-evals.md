@@ -1,6 +1,6 @@
 # Retrieval and evaluations
 
-Read this when you build retrieval-augmented generation (RAG) over documents, tickets or knowledge bases, and whenever you need to measure the quality of a model-backed feature. Model risks, tools and agents are covered in [ai-features.md](ai-features.md). Plan the work with [the AI evaluation plan template](../templates/ai-eval-plan.md).
+Use for RAG over documents, tickets or knowledge bases, and model-quality measurement. See [ai-features.md](ai-features.md) for model risks/tools/agents; use the [AI evaluation plan](../templates/ai-eval-plan.md).
 
 ## Contents
 
@@ -19,16 +19,12 @@ Read this when you build retrieval-augmented generation (RAG) over documents, ti
 
 ## Define what good means first
 
-Anthropic's guidance on building evaluations asks for success criteria that are specific, measurable, achievable and relevant. "Answers questions well" is not a criterion; "at least 90 percent of answers on the evaluation set are fully supported by the cited documents, and the correct document is in the top five results for 95 percent of questions" is.
-
-Apply it:
+Anthropic recommends specific, measurable, achievable and relevant success criteria. Replace "answers well" with, for example: at least 90 percent of evaluation answers fully supported by citations; correct document in the top five results for 95 percent of questions.
 
 1. Write criteria for answer quality, grounding, refusal behaviour, latency, cost per question and privacy before you build.
 2. Record a baseline (the current system, a simple keyword search, or a human answer) so improvements are measured, not felt.
 
 ## Ingest documents with permissions and provenance
-
-Apply it:
 
 1. Capture, for every document, its source system, stable identifier, version or modification time, owner, classification and the list of principals (users or groups) allowed to read it.
 2. Split documents along their structure (headings, sections, list items) rather than at arbitrary character counts, keep the heading path with each chunk, and keep chunks small enough to be specific but large enough to stand alone.
@@ -38,9 +34,7 @@ Apply it:
 
 ## Enforce permissions at query time
 
-The most damaging RAG failure is answering a user with content they are not allowed to see. Prompts cannot enforce access control.
-
-Apply it:
+Unauthorised disclosure is RAG's most damaging failure. Prompts cannot enforce access control.
 
 1. Filter retrieval by the caller's identities on every query, inside the search request, before ranking and generation. Search services do not know who the caller is; your application must pass the caller's user and group identifiers into the filter each time.
 2. Resolve group memberships from the identity provider at query time or with a short cache, so revoked access takes effect quickly.
@@ -51,8 +45,6 @@ Apply it:
 
 ## Retrieve well
 
-Apply it:
-
 1. Start with hybrid retrieval (keyword and vector search combined), because vector search alone misses exact terms such as error codes, product names and identifiers.
 2. Add a reranking step over the top candidates when relevance matters more than a few tens of milliseconds.
 3. Use metadata filters (product, version, date, language) where the question implies them.
@@ -60,8 +52,6 @@ Apply it:
 5. Measure retrieval on its own (see below) before blaming the prompt.
 
 ## Generate grounded answers with citations
-
-Apply it:
 
 1. Instruct the model to answer only from the supplied context, and to say plainly when the context does not contain the answer.
 2. Return citations that link to the exact source document and section, and show users enough of the source to check the claim.
@@ -71,17 +61,13 @@ Apply it:
 
 ## Keep the index fresh and complete
 
-Apply it:
-
 1. Sync incrementally from each source, and monitor the lag between a source change and its appearance in the index.
 2. Propagate deletions and permission changes as reliably as additions. A deleted or restricted document that remains retrievable is a data leak (see [data-and-privacy.md](data-and-privacy.md)).
 3. Version the index together with the embedding model and chunking settings. Changing either requires re-embedding into a new index, evaluating it, then switching over.
 
 ## Build the evaluation set from real data
 
-Hamel Husain's advice on evaluations is to look at real traces relentlessly: error analysis on actual data finds the failure modes that matter.
-
-Apply it:
+Hamel Husain recommends relentless error analysis on real traces to find consequential failures.
 
 1. Collect real or realistic questions, and label the documents that answer them and an acceptable answer.
 2. Include hard cases: questions with no answer in the corpus, ambiguous questions, questions that need two documents, questions about restricted documents asked by users without access, outdated documents, and prompt injection planted in a document.
@@ -97,8 +83,6 @@ Apply it:
 | Model as judge with a written rubric | Groundedness, relevance, tone, completeness | Must be validated against human labels |
 | Human review | Calibrating judges, sampling production, high-stakes cases | Slow and expensive; use sparingly |
 
-Apply it:
-
 1. Prefer code-based checks wherever they work.
 2. For a model judge, write a specific rubric, ask for a binary or small-scale verdict, and use a different model from the one being graded where possible.
 3. Measure the judge's agreement with human labels on a sample, using precision and recall rather than raw agreement when classes are imbalanced, and re-check periodically.
@@ -113,18 +97,14 @@ Apply it:
 | Generation | Answer relevance | Does the answer address the question that was asked? |
 | Whole system | Correct refusal rate | Does it decline when the corpus has no answer or the user lacks access? |
 
-Context relevance, groundedness and answer relevance together form what TruLens calls the RAG triad. Separating the stages tells you whether to fix retrieval or generation.
+TruLens's RAG triad: context relevance, groundedness and answer relevance. Score stages separately to locate retrieval versus generation faults.
 
 ## Run evaluations as regression tests
-
-Apply it:
 
 1. Run the fast, code-graded evaluations in CI on every change to prompts, models, retrieval settings, chunking or tools, and fail the build when a key metric drops below its threshold.
 2. Run the slower, model-graded evaluations before release, and compare them with the previous version, case by case.
 3. In production, sample traces for review, collect user feedback, and watch refusal rates, citation clicks and cost per answer.
 4. Use A/B tests only for mature products with enough traffic, after offline evaluations pass.
-
-Check:
 
 - [ ] Permission filtering happens inside retrieval on every query, and a two-user test proves it.
 - [ ] Answers cite their sources, and the system refuses when the context has no answer.
@@ -133,11 +113,11 @@ Check:
 
 ## Failure modes
 
-- An intern's question retrieves a confidential salary spreadsheet, because the index had no permission filter and the prompt "told" the model not to share it.
-- A document deleted months ago still appears in answers, because the sync only handled additions.
-- The team tunes prompts by trying a few questions by hand, and every change fixes one case and breaks two others.
-- A model judge rates every answer as good, and nobody ever checked it against human labels.
-- A planted sentence in a wiki page instructs the assistant to send users to a phishing link, and the assistant complies.
+- Missing permission filters expose confidential salaries to interns despite prompt prohibitions.
+- Addition-only sync leaves months-old deleted documents in answers.
+- Manual prompt spot-checks fix one case while breaking two others.
+- Uncalibrated model judges approve everything without human-label comparison.
+- Wiki-page injection redirects users to phishing links.
 
 ## Sources
 

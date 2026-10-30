@@ -65,7 +65,7 @@ Next: approve the deprecation notice for unpaginated responses
 | 7 templates | Decision record, design one-pager, threat model, pull request, runbook, incident review, AI evaluation plan |
 | Change scanner | Suggests a minimum tier for a diff, flags weakened tests and new suppressions, finds likely secrets without printing them |
 | Evals | 12 behaviour scenarios with 58 gradable assertions; 20 trigger queries, half of them near misses |
-| Token budget | `SKILL.md` is 144 lines. Claude Code estimates about 170 tokens per session until it triggers and about 3,800 when it loads. The references, about 233,000 characters, load only when routed. |
+| Context budget | Discovery loads only the name and description. `SKILL.md` is 119 lines (about 9,300 characters); the 25 references total about 219,500 characters and load only when routed. |
 
 The seven rules hold at every tier:
 

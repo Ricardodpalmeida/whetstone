@@ -1,6 +1,6 @@
 # Documentation
 
-Read this when a change alters how something is built, configured, run, used or operated, and when you are asked to write a README, guide, reference page, runbook, decision record or changelog.
+Use when build, configuration, execution, usage or operations change, or for READMEs, guides, references, runbooks, decision records and changelogs.
 
 ## Contents
 
@@ -15,9 +15,7 @@ Read this when a change alters how something is built, configured, run, used or 
 
 ## Update documentation in the same change
 
-Docs as code means writing documentation with the same tools and workflow as code: plain text in the repository, reviewed in pull requests, checked by automation. Google's review guide expects documentation to change whenever build, test, usage or release steps change.
-
-Apply it:
+Docs as code: repository text, PR review and automated checks. Google's review guide requires documentation updates when build, test, usage or release steps change.
 
 1. When a change alters behaviour, configuration, a command, an API, set-up steps or operations, update the affected documentation in the same pull request.
 2. Keep documentation next to what it describes: the README at the root, module notes beside the module, decision records and runbooks in a `docs/` folder or wherever the repository already keeps them.
@@ -34,7 +32,7 @@ Apply it:
 
 ## Choose the right kind of document
 
-Diátaxis, by Daniele Procida, separates documentation into four kinds that serve different needs. Mixing them produces documents that serve nobody well. Its compass asks two questions: does the reader need to act or to understand, and are they learning or working?
+Daniele Procida's Diátaxis separates four documentation needs. Choose using two axes: act or understand; learn or work. Mixing kinds serves readers poorly.
 
 | Kind | Reader's situation | Shape |
 |---|---|---|
@@ -45,9 +43,7 @@ Diátaxis, by Daniele Procida, separates documentation into four kinds that serv
 
 ## Write a README that gets people started
 
-A new contributor should go from clone to a running system and a passing test suite using only the README.
-
-Check:
+The README alone must take a newcomer from clone to a running system and passing tests.
 
 - [ ] One paragraph on what the project does and who it is for.
 - [ ] Prerequisites with versions.
@@ -59,17 +55,13 @@ Check:
 
 ## Generate reference material from the source of truth
 
-Hand-written reference material drifts from the code. Generate it where possible.
-
-Apply it:
+Generate reference documentation where possible to prevent drift.
 
 1. Generate API reference from the OpenAPI or AsyncAPI contract, CLI reference from the argument parser's help, and configuration reference from the configuration schema.
 2. Write docstrings for public modules, classes and functions in the style the language's tooling understands, and explain why in comments rather than what (see [implementation.md](implementation.md)).
 3. Include at least one working example for every public operation, and test the examples where the tooling allows (for example doctests or example projects built in CI).
 
 ## Write for the reader
-
-Apply it:
 
 1. Start with what the reader is trying to do, and put the most common task first.
 2. Use plain language, short sentences and the active voice. Define each acronym on first use.
@@ -96,22 +88,20 @@ Good:
 
 ## Verify documentation like code
 
-Apply it:
-
 1. Run every command you document, in a clean environment where possible, before you publish it.
 2. Check links automatically in CI, and fix or remove broken ones.
 3. Build the documentation site, if there is one, in CI so broken markup fails the build.
 4. Re-read the page as a newcomer would. If a step depends on knowledge that is not written down, write it down.
 
-Agent instruction files such as `CLAUDE.md` and `AGENTS.md` are documentation for agents. How to keep them short and current is covered in [learning-loop.md](learning-loop.md).
+`CLAUDE.md` and `AGENTS.md` document agent instructions; [learning-loop.md](learning-loop.md) covers keeping them concise and current.
 
 ## Failure modes
 
-- The code changes, the README does not, and the next person spends a day on outdated set-up steps.
-- A tutorial wanders into reference tables and architecture history, and beginners give up halfway.
-- Reference documentation is written by hand and silently drifts from the API.
-- Examples contain a real API key, copied from a working terminal.
-- Screenshots show an interface that no longer exists, and nothing says when they were taken.
+- Unchanged READMEs waste a newcomer's day on outdated setup.
+- Reference tables and architecture history derail beginner tutorials.
+- Hand-written references silently drift from the API.
+- Examples expose real API keys copied from terminals.
+- Undated screenshots show obsolete interfaces.
 
 ## Sources
 

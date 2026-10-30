@@ -1,6 +1,6 @@
 # Stack notes: .NET
 
-Read this in addition to the core references when the change is in C# or another .NET language, including ASP.NET Core and Entity Framework Core. These notes cover stack-specific traps only.
+Add these stack-specific notes to core references for C#/.NET, ASP.NET Core and Entity Framework Core.
 
 ## Contents
 
@@ -15,8 +15,6 @@ Read this in addition to the core references when the change is in C# or another
 
 ## Use HttpClient correctly
 
-Apply it:
-
 1. Do not create and dispose an `HttpClient` per request. Each instance owns a connection pool, and disposed connections linger in TIME-WAIT, so high request rates can exhaust ports.
 2. Use either a long-lived client with `SocketsHttpHandler.PooledConnectionLifetime` set (so DNS changes are picked up), or `IHttpClientFactory` with typed clients. Avoid the factory when the app depends on cookies, because pooled handlers share cookie containers.
 3. Set timeouts deliberately. The default `HttpClient.Timeout` is 100 seconds, which is far too long for most dependencies on a request path.
@@ -24,7 +22,7 @@ Apply it:
 
 ## Add resilience once, deliberately
 
-`AddStandardResilienceHandler` from the `Microsoft.Extensions.Http.Resilience` package adds a preconfigured pipeline to an `HttpClient`. Its documented defaults are:
+`Microsoft.Extensions.Http.Resilience` supplies `AddStandardResilienceHandler`, a preconfigured `HttpClient` pipeline with these documented defaults:
 
 | Strategy (outermost first) | Default |
 |---|---|
@@ -34,15 +32,11 @@ Apply it:
 | Circuit breaker | Opens at a 10 percent failure ratio over 30 seconds with at least 100 requests; breaks for 5 seconds |
 | Attempt timeout | 10 seconds per attempt |
 
-Apply it:
-
 1. Retries apply to all HTTP methods by default. Call `options.Retry.DisableForUnsafeHttpMethods()` unless every unsafe operation is idempotent or carries an idempotency key (see [api-design.md](api-design.md)).
 2. Tune the timeouts to the dependency's measured latency rather than accepting the defaults blindly (see [reliability-performance.md](reliability-performance.md)).
 3. Add only one resilience handler per client. Stacked handlers multiply retries.
 
 ## Return problem details
-
-Apply it:
 
 1. Call `builder.Services.AddProblemDetails()`, then `app.UseExceptionHandler()` and `app.UseStatusCodePages()`, so unhandled exceptions and empty error responses become RFC 9457 problem details.
 2. Keep the developer exception page to the Development environment only, so stack traces never reach production clients.
@@ -50,9 +44,7 @@ Apply it:
 
 ## Apply EF Core migrations safely
 
-Microsoft's guidance recommends migration bundles for automated production deployment and SQL scripts when the SQL must be reviewed, and treats migrating at application start-up as a last resort.
-
-Apply it:
+Microsoft recommends migration bundles for automated production deployments, SQL scripts for SQL review, and startup migration only as a last resort.
 
 1. Generate a migration bundle, or an idempotent SQL script with `dotnet ef migrations script --idempotent`, and apply it as a separate, logged release step with a credential that has schema rights. The application's runtime identity should not need them.
 2. Review the generated SQL for every migration, especially renames, column type changes and anything that rewrites or locks a large table (see [data-and-privacy.md](data-and-privacy.md)).
@@ -61,9 +53,7 @@ Apply it:
 
 ## Audit NuGet packages
 
-NuGet Audit runs during restore and is on by default. It reports known vulnerabilities as warnings NU1901 (low) to NU1904 (critical); for projects targeting `net10.0` or later it audits transitive packages too (`NuGetAuditMode` defaults to `all`).
-
-Apply it:
+NuGet Audit defaults on during restore: vulnerability warnings NU1901 (low) through NU1904 (critical). Targets `net10.0`+ also audit transitive packages (`NuGetAuditMode=all` by default).
 
 1. Keep auditing on, and set `NuGetAuditMode` to `all` for older target frameworks.
 2. Treat high and critical findings as errors with `<WarningsAsErrors>$(WarningsAsErrors);NU1903;NU1904</WarningsAsErrors>`, and triage the rest (see [supply-chain.md](supply-chain.md)).
@@ -71,7 +61,7 @@ Apply it:
 
 ## Authenticate to Azure deterministically
 
-`DefaultAzureCredential` is convenient for development because it tries many credential types in turn. Microsoft's guidance is to replace it in deployed applications with a specific credential such as `ManagedIdentityCredential`, because the chain is harder to debug, slower, and can change behaviour when environment variables change. If you keep it, set `AZURE_TOKEN_CREDENTIALS` to `prod` to exclude developer-tool credentials. More Azure notes are in [stack-azure.md](stack-azure.md).
+`DefaultAzureCredential` tries multiple credentials, useful in development. Microsoft recommends a specific deployed credential such as `ManagedIdentityCredential`: chains are slower, harder to debug and sensitive to environment changes. If retained, set `AZURE_TOKEN_CREDENTIALS=prod` to exclude developer-tool credentials. See [stack-azure.md](stack-azure.md).
 
 ## Other .NET traps
 

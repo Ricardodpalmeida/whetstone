@@ -1,6 +1,6 @@
 # Security
 
-Read this for any change that handles outside input, authentication, authorisation, sessions, secrets, cryptography, outbound network calls, files or personal data. Threat modeling lives in [threat-modeling.md](threat-modeling.md), dependencies and pipelines in [supply-chain.md](supply-chain.md), and model-specific risks in [ai-features.md](ai-features.md).
+Use for outside input, authentication/authorisation, sessions, secrets, cryptography, outbound calls, files and personal data. Also see [threat-modeling.md](threat-modeling.md), [supply-chain.md](supply-chain.md) for dependencies/pipelines, and [ai-features.md](ai-features.md) for model risks.
 
 ## Contents
 
@@ -46,11 +46,11 @@ Read this for any change that handles outside input, authentication, authorisati
 
 ## Pick an ASVS level
 
-OWASP's Application Security Verification Standard (ASVS) 5.0.0, released in May 2025, is the requirement catalogue to verify against. OWASP's developer guide summarises the levels as Level 1 for first steps, automated checks or a whole-portfolio view, Level 2 for most applications, and Level 3 for high-value, high-assurance or high-safety systems. Target Level 2 for anything handling personal or financial data. When you cite a requirement, include the ASVS version, because identifiers changed between versions.
+Verify against OWASP ASVS 5.0.0 (May 2025). Its developer guide maps Level 1 to first steps, automation or portfolio checks; Level 2 to most applications; Level 3 to high-value, high-assurance or high-safety systems. Target Level 2 for personal/financial data. Cite the version with requirement IDs, which change between releases.
 
 ## Keep data out of the code path
 
-Injection happens when data is interpreted as code. Keep the two apart structurally instead of filtering bad characters.
+Prevent injection by structurally separating code and data, not filtering bad characters.
 
 | Interpreter | Do | Never |
 |---|---|---|
@@ -62,11 +62,9 @@ Injection happens when data is interpreted as code. Keep the two apart structura
 | Spreadsheet exports | Neutralise cells that begin with formula characters | Write user text into CSV cells unchanged |
 | Language model prompts | Treat retrieved and user content as data with clear delimiters, and constrain tools (see [ai-features.md](ai-features.md)) | Assume instructions inside content will be ignored |
 
-Validate input against an allowlist of expected shape, length and range at the boundary (see [implementation.md](implementation.md)). Validation narrows what reaches the interpreter; it does not replace parameterisation or encoding.
+Allowlist input shape, length and range at [boundaries](implementation.md). Validation limits interpreter input; it does not replace parameterisation or encoding.
 
 ## Authenticate users
-
-Apply it:
 
 1. Delegate sign-in to an established identity provider through OpenID Connect when you can. Building password authentication yourself is a T3 change.
 2. If you store passwords, follow NIST SP 800-63B-4: require at least 15 characters for a password used alone and at least 8 when it is one factor of several, allow at least 64 characters, impose no composition rules, never force periodic changes (only on evidence of compromise), and reject passwords found on a blocklist of common or breached values.
@@ -77,9 +75,7 @@ Apply it:
 
 ## Use OAuth 2.0 and OpenID Connect correctly
 
-RFC 9700, the OAuth 2.0 Security Best Current Practice (January 2025), sets the current baseline.
-
-Apply it:
+OAuth 2.0's current baseline is RFC 9700 (January 2025).
 
 1. Use the authorisation code flow with PKCE using the `S256` method for every client type. Do not use the implicit grant, and never use the resource owner password credentials grant.
 2. Register exact redirect URIs. Authorisation servers must compare them by exact string match.
@@ -91,8 +87,6 @@ Apply it:
 
 ## Manage sessions and prevent CSRF
 
-Apply it:
-
 1. Mark session cookies `Secure`, `HttpOnly` and `SameSite` (`Strict` where the flows allow, otherwise `Lax`), and prefer the `__Host-` prefix.
 2. Issue a new session identifier at login and at every privilege change, and invalidate the old one.
 3. Enforce both an idle timeout and an absolute timeout on the server. Invalidate the session on the server at logout.
@@ -100,8 +94,6 @@ Apply it:
 5. Never change state on `GET` requests.
 
 ## Authorise every request
-
-Apply it:
 
 1. Check authorisation on the server for every request, for the specific object requested, not only for the route. A missing object-level check (an insecure direct object reference) lets anyone who can change an identifier read other people's data.
 2. Scope every query by tenant or owner at the data-access layer, so a forgotten check in one handler cannot leak another tenant's rows.
@@ -111,9 +103,7 @@ Apply it:
 
 ## Make outbound requests safely
 
-When the server fetches a URL that a user influences (webhooks, imports, previews, model tools), it can be turned against internal systems.
-
-Apply it:
+User-influenced server fetches (webhooks, imports, previews, model tools) can attack internal systems.
 
 1. Allowlist destinations where possible, and build the request from fixed scheme, host and port rather than passing a user URL through.
 2. Resolve the hostname, reject private, loopback, link-local and cloud metadata addresses, and connect to the address you validated so DNS rebinding cannot swap it.
@@ -122,16 +112,12 @@ Apply it:
 
 ## Handle secrets
 
-Apply it:
-
 1. Keep secrets in a secret manager or the platform's secret store, injected at runtime. Use workload identities instead of long-lived keys where the platform supports them.
 2. Give each workload its own credentials with the least privilege it needs, and rotate them on a schedule, automatically where possible.
 3. Run secret scanning in pre-commit hooks and in CI. The bundled [change scanner](../scripts/change_scan.py) flags likely secrets in a diff without printing them.
 4. If a secret leaks, revoke and replace it first. Removing it from history comes second, because the value is already exposed.
 
 ## Use cryptography conservatively
-
-Apply it:
 
 1. Use TLS for all network traffic, internal included. NIST SP 800-52 Rev. 2 requires TLS 1.2 as the minimum and support for TLS 1.3; prefer 1.3.
 2. Never implement cryptographic primitives or protocols yourself. Use a maintained high-level library with safe defaults, such as authenticated encryption.
@@ -150,17 +136,13 @@ Apply it:
 | `Permissions-Policy` | Disable unused features, for example `geolocation=(), camera=(), microphone=()` |
 | `Cross-Origin-Opener-Policy` | `same-origin` |
 
-Do not send `X-XSS-Protection` (or set it to `0`), and do not use `Expect-CT` or `Public-Key-Pins`.
+Omit `X-XSS-Protection` or set it to `0`; never use `Expect-CT` or `Public-Key-Pins`.
 
 ## Verify
-
-Apply it:
 
 1. Run the repository's static analysis, dependency audit and secret scan, and read new findings in the files you touched.
 2. Add tests for each threat-model mitigation and each authorisation rule, including negative cases.
 3. For T3 changes, ask for a security-focused human review, and record which ASVS requirements were checked.
-
-Check:
 
 - [ ] No user-controlled data reaches an interpreter except through parameters or encoding.
 - [ ] Every new endpoint has an authorisation test for a denied caller.
@@ -169,11 +151,11 @@ Check:
 
 ## Failure modes
 
-- A route checks that the user is logged in but never checks that the record belongs to them.
-- A JWT library accepts whatever algorithm the token header names.
-- A "temporary" API key is committed, and deleting the commit is mistaken for revoking the key.
-- An image preview feature fetches `http://169.254.169.254/` and returns cloud credentials.
-- Security headers are copied from a blog post without testing, and an overly strict policy breaks login, so somebody disables them entirely.
+- Checking login without record ownership.
+- JWT libraries trusting token-selected algorithms.
+- Treating deletion of committed "temporary" keys as revocation.
+- Image previews fetch `http://169.254.169.254/` and leak cloud credentials.
+- Untested copied headers break login; teams disable all protection to compensate.
 
 ## Sources
 

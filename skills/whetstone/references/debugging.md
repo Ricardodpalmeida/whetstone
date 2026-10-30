@@ -1,6 +1,6 @@
 # Debugging
 
-Read this when something is broken: a failing test, a bug report, a crash, a production incident, or behaviour nobody can explain.
+Use for failing tests, bug reports, crashes, production incidents and unexplained behaviour.
 
 ## Contents
 
@@ -23,9 +23,7 @@ Read this when something is broken: a failing test, a bug report, a crash, a pro
 
 ## Reproduce the failure
 
-A failure you cannot reproduce is a failure you cannot prove you fixed.
-
-Apply it:
+Without reproduction, you cannot prove a fix.
 
 1. Collect the exact input, version, environment, configuration and steps. Ask for them only if you cannot get them from logs, tickets or the running system.
 2. Capture the failure as an automated test at the lowest level that still fails: a unit test if the logic is local, an integration test if it needs a real dependency.
@@ -33,14 +31,10 @@ Apply it:
 4. For intermittent failures, run the test in a loop (for example 100 times) and record the failure rate. Vary ordering, seeds, parallelism, time zone, locale and load. Shared state, time, randomness, ordering assumptions, network calls and resource leaks cause most flakiness.
 5. If you still cannot reproduce it, add targeted instrumentation and gather more evidence. Do not ship a speculative fix in place of a reproduction.
 
-Check:
-
 - [ ] A test or scripted procedure fails reliably, or the failure rate is measured.
 - [ ] You can explain why the reproduction exercises the reported symptom.
 
 ## Gather evidence
-
-Apply it:
 
 1. Read the whole error, including every "caused by" entry in the chain. The first error in a log is usually more informative than the last one.
 2. Pull logs, traces and metrics for the failing request, using its correlation or trace identifier.
@@ -50,9 +44,7 @@ Apply it:
 
 ## Form and test hypotheses
 
-Google's SRE book describes troubleshooting as the hypothetico-deductive method: propose a cause, then test it against the system, until the root cause is identified.
-
-Apply it:
+Google SRE's troubleshooting method: propose causes and test them against the system until the root cause is identified.
 
 1. Write down candidate causes. Rank them by likelihood and by how cheaply you can test them.
 2. For each experiment, write the expected result before you run it. Prefer experiments that can rule a hypothesis out over experiments that can only fit it.
@@ -73,9 +65,7 @@ Frequent culprits worth checking early:
 
 ## Find the change that introduced it
 
-When a known good version exists, let `git bisect` find the first bad commit instead of reading history by hand.
-
-Apply it:
+With a known good version, use `git bisect` to find the first bad commit.
 
 1. Write a script that exits 0 when the code is good, 1 when it is bad, and 125 when the commit cannot be tested (for example, it does not build).
 2. Run it with `git bisect run`. Exit codes 1 to 127, except 125, mark a commit bad; any other code aborts the bisect.
@@ -87,11 +77,9 @@ git bisect run ./scripts/repro.sh
 git bisect reset
 ```
 
-The same halving approach works for dependency upgrades (compare lockfiles and bisect the version range), configuration changes and data migrations.
+Also bisect dependency versions (compare lockfiles), configuration changes and migrations.
 
 ## Fix the cause and guard it
-
-Apply it:
 
 1. Confirm the reproduction test fails for the reason you identified, not for an incidental one.
 2. Fix the root cause. Ask "why" until you reach a cause you can change. A null check or a broad exception handler that hides the error is a symptom fix.
@@ -101,17 +89,13 @@ Apply it:
 6. Remove temporary instrumentation, or turn it into proper telemetry as described in [observability.md](observability.md).
 7. Write the explanation in the PR: symptom, root cause, evidence, fix, regression test and follow-ups.
 
-Check:
-
 - [ ] The regression test failed before the fix and passes after it.
 - [ ] The root cause is named in the PR, with the evidence that supports it.
 - [ ] No debug output, commented-out code or skipped tests remain.
 
 ## Production incidents
 
-When users are affected, restore service before you look for the root cause. The SRE book puts it plainly: "Stopping the bleeding should be your first priority."
-
-Apply it:
+Restore affected users' service before investigating root cause. Google SRE: "Stopping the bleeding should be your first priority."
 
 1. Mitigate with the fastest reversible action available: roll back the last deploy, turn off a feature flag, shift traffic, or add capacity. Mitigation comes before diagnosis.
 2. Ask before you take any action in production unless a runbook pre-authorises it. Never run destructive or data-changing commands in production on your own initiative.
@@ -122,12 +106,12 @@ Apply it:
 
 ## Failure modes
 
-- Several changes are made at once, the symptom disappears, and nobody knows which change mattered or what else it broke.
-- A broad exception handler, a default value or a retry hides the error, and the defect resurfaces later as corrupt data.
-- A flaky test is re-run until it passes, and the race condition it was reporting ships to production.
-- A fix is declared without a reproduction, so nothing proves it works.
-- Debug logging stays in the code, sometimes printing tokens or personal data.
-- The team hunts for the root cause during an outage instead of rolling back first.
+- Simultaneous changes hide which fixed the symptom and what else broke.
+- Broad catches, defaults or retries hide errors that later corrupt data.
+- Rerunning flaky tests to green ships the underlying race.
+- Declaring a fix without reproduction leaves it unproven.
+- Leftover debug logging exposes tokens or personal data.
+- Investigating root cause during an outage instead of rolling back first.
 
 ## Sources
 

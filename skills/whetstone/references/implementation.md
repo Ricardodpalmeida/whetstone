@@ -1,6 +1,6 @@
 # Implementation
 
-Read this while you write or change code at any tier above T0.
+Use when writing or changing code above T0.
 
 ## Contents
 
@@ -18,8 +18,6 @@ Read this while you write or change code at any tier above T0.
 
 ## Read before you write
 
-Apply it:
-
 1. Read the repository's instruction files (for example `CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`) and follow them. They override generic advice, including this skill's, except where they would break a non-negotiable rule.
 2. Read the code you will change, its callers and its tests. Find the closest existing example of what you are about to build and follow its patterns.
 3. Before you call a library function, confirm it exists with that signature in the version pinned by the lockfile. Read the installed source or the documentation for that version. Plausible but non-existent APIs are a common failure of generated code.
@@ -27,17 +25,13 @@ Apply it:
 
 ## Work in small verified steps
 
-Apply it:
-
 1. Make one logical change at a time, run the relevant checks, and keep the code building after each step.
 2. Prefer several small commits that each leave the build green over one large commit at the end.
 3. When a step fails, fix it or revert it before starting the next one. Do not stack new changes on a broken state.
 
 ## Write for the next reader
 
-Code is read far more often than it is written. Google's review guide asks whether code is too complex for a reader to understand quickly or for a developer to change safely.
-
-Apply it:
+Code is mostly read. Google's review guide tests whether readers can understand it quickly and developers change it safely.
 
 1. Choose names that reveal intent and units: `timeout_ms`, `price_cents`, `is_active`, `fetch_overdue_invoices`. Avoid abbreviations unless they are standard in the domain.
 2. Keep functions focused on one job. Replace a boolean parameter that switches behaviour with two functions. Return early to avoid deep nesting.
@@ -67,9 +61,7 @@ def archive_expired_sessions(sessions: list[Session], now: datetime) -> int:
 
 ## Handle errors deliberately
 
-OWASP added "Mishandling of Exceptional Conditions" to its Top 10 in 2025: errors that are swallowed, fail open or leak details are a security problem as well as a reliability one.
-
-Apply it:
+OWASP Top 10:2025 added "Mishandling of Exceptional Conditions": swallowed errors, fail-open behaviour and leaked details threaten security and reliability.
 
 1. Decide for each failure whether it is expected (not found, invalid input, conflict, dependency unavailable) or a programming error. Model expected failures in the interface; let programming errors fail fast and loudly.
 2. Never swallow an error. Catch the narrowest type you can handle, and when you re-raise, add context and keep the original cause attached.
@@ -98,9 +90,7 @@ except PolicyUnavailable as exc:
 
 ## Parse input at the boundary
 
-Alexis King's "Parse, don't validate" recommends turning untrusted input into precise types at the edge, so the rest of the code can rely on what the type guarantees instead of re-checking.
-
-Apply it:
+Alexis King's "Parse, don't validate": convert untrusted input into precise boundary types; core code can trust their guarantees without rechecking.
 
 1. Parse requests, messages, files, environment variables and command-line arguments into typed objects at the boundary. Reject invalid input there with a clear error.
 2. Inside the core, accept only the parsed types. A function that takes `EmailAddress` cannot receive an unchecked string.
@@ -110,8 +100,6 @@ Apply it:
 
 ## Control state, time and concurrency
 
-Apply it:
-
 1. Prefer immutable values and functions without side effects. Push side effects (I/O, clocks, randomness) to the edges.
 2. Inject the clock, random number source and identifier generator, so tests can control them.
 3. In asynchronous code, never block the event loop with synchronous I/O or heavy computation, await or supervise every task you start, and let cancellation propagate.
@@ -120,8 +108,6 @@ Apply it:
 
 ## Treat configuration as an input
 
-Apply it:
-
 1. Read configuration from the environment or a configuration service, as the Twelve-Factor App recommends, and keep secrets out of the repository (see [security.md](security.md)).
 2. Validate all configuration at start-up and refuse to start with a clear message when it is invalid, rather than failing on the first request.
 3. Make defaults safe: debug off, verbose errors off, TLS verification on, the most restrictive permissions.
@@ -129,9 +115,7 @@ Apply it:
 
 ## Refactor safely
 
-Kent Beck's advice, quoted by Martin Fowler, is to "make the change easy, then make the easy change".
-
-Apply it:
+Kent Beck, quoted by Martin Fowler: "make the change easy, then make the easy change".
 
 1. Refactor in commits separate from behaviour changes, so each can be reviewed and reverted on its own.
 2. Have tests that cover the behaviour before you refactor. If they are missing, add characterisation tests that pin down the current behaviour first.
@@ -146,8 +130,6 @@ Apply it:
 3. Never disable a linter rule, type check or compiler warning to get a clean run. If a suppression is truly justified, scope it to one line and give the reason in a comment.
 4. Keep the diff minimal and on task. Unrequested renames, reformatting and dependency changes belong in separate changes.
 
-Check:
-
 - [ ] The code builds, lints and type-checks with no new unexplained suppressions.
 - [ ] No swallowed errors, commented-out code or leftover debug output remain.
 - [ ] Every new external call has a timeout and a handled failure path.
@@ -155,11 +137,11 @@ Check:
 
 ## Failure modes
 
-- A generated call to a library method that does not exist in the pinned version compiles in the agent's head and fails at runtime.
-- An error is caught and ignored "temporarily", and data silently goes missing.
-- An authorisation helper returns "allowed" when its dependency times out.
-- Money is summed as floating point, and invoices are off by a cent.
-- A refactor and a behaviour change share one commit, so neither can be reviewed or reverted alone.
+- Generated calls to methods absent from pinned libraries fail at runtime.
+- "Temporarily" ignored errors silently lose data.
+- Authorisation allows access when its dependency times out.
+- Floating-point money calculations leave invoices a cent off.
+- Mixing refactors and behaviour changes prevents independent review or rollback.
 
 ## Sources
 

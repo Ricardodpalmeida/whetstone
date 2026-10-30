@@ -1,6 +1,6 @@
 # Stack notes: TypeScript and React
 
-Read this in addition to the core references when the change is in TypeScript or JavaScript, a React front end, or a Node.js service. These notes cover stack-specific traps only.
+Add these stack-specific notes to core references for TypeScript/JavaScript, React and Node.js.
 
 ## Contents
 
@@ -15,9 +15,7 @@ Read this in addition to the core references when the change is in TypeScript or
 
 ## Handle fetch failures and timeouts
 
-`fetch` resolves its promise for HTTP error statuses such as 404 and 504; it rejects only when the request itself fails. It also has no timeout of its own.
-
-Apply it:
+`fetch` resolves HTTP errors such as 404/504, rejecting only request failures; it has no default timeout.
 
 1. Check `response.ok` (or the status) on every response, and turn failures into typed errors.
 2. Pass `signal: AbortSignal.timeout(ms)` to every request, and combine it with the caller's abort signal where one exists.
@@ -41,9 +39,7 @@ const user = UserSchema.parse(await res.json());
 
 ## Keep secrets out of the bundle
 
-Everything shipped to the browser is public. Vite, for example, exposes variables prefixed with `VITE_` in client code and warns that they must not contain sensitive information such as API keys, because they are bundled at build time.
-
-Apply it:
+Browser bundles are public. Vite exposes `VITE_` variables at build time; never put API keys or other sensitive data in them.
 
 1. Put API keys, client secrets and service credentials only on a server: your back end, a backend-for-frontend, or a serverless function.
 2. Treat any value read in browser code as visible to every user, including values in source maps and local storage.
@@ -51,9 +47,7 @@ Apply it:
 
 ## Keep tokens out of the browser
 
-RFC 10017, OAuth 2.0 for Browser-Based Applications (August 2026), presents three architectures in decreasing order of security and puts the backend-for-frontend (BFF) first: the back end is a confidential OAuth client, keeps tokens in a server-side session behind a secure cookie, and proxies API calls, so there are no tokens in the browser to steal. It strongly recommends this pattern for business applications, sensitive applications and applications that handle personal data.
-
-Apply it:
+RFC 10017, OAuth 2.0 for Browser-Based Applications (August 2026), ranks three architectures by security, BFF first. This confidential backend client keeps tokens in a server-side session behind a secure cookie and proxies API calls, leaving none in the browser to steal. It strongly recommends BFF for business, sensitive and personal-data applications.
 
 1. For new single-page applications that call protected APIs, use a BFF with `HttpOnly`, `Secure`, `SameSite` session cookies and CSRF protection (see [security.md](security.md)).
 2. If a BFF is truly impossible, use the authorisation code flow with PKCE, short-lived access tokens, and refresh token rotation; never the implicit flow.
@@ -62,9 +56,7 @@ Apply it:
 
 ## Prevent cross-site scripting in React
 
-React escapes values rendered in JSX, which prevents most cross-site scripting. The remaining risks come from bypassing it.
-
-Apply it:
+React's JSX escaping prevents most XSS; bypasses remain dangerous.
 
 1. Avoid `dangerouslySetInnerHTML`. When rich HTML is unavoidable, sanitise it with a maintained HTML sanitiser configured with an allowlist, immediately before rendering.
 2. Validate URLs from users or data before putting them in `href` or `src`, and allow only `https:` (and `mailto:` where needed), because `javascript:` URLs execute script.
@@ -73,16 +65,12 @@ Apply it:
 
 ## Use the type system honestly
 
-Apply it:
-
 1. Enable `strict` mode in `tsconfig.json` and keep it on.
 2. Avoid `any`, non-null assertions (`!`) and broad type assertions (`as`) at boundaries. Use `unknown` and parse with a runtime schema instead.
 3. Model states as discriminated unions (`{ status: "loading" } | { status: "error"; error: ApiError } | { status: "ready"; data: User }`) so impossible states cannot be represented.
 4. Do not add `@ts-ignore` or `@ts-expect-error` without a comment explaining why and a tracked issue.
 
 ## Test components and accessibility
-
-Apply it:
 
 1. Test components through what users see and do, following Testing Library's principle that tests resembling real use give more confidence: query by role and accessible name, not by CSS class or test identifiers where a role exists.
 2. Run axe-core in end-to-end tests, for example with `@axe-core/playwright`, filtered to WCAG A and AA tags, and fail on new violations (see [accessibility.md](accessibility.md)).

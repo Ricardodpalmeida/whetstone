@@ -1,6 +1,6 @@
 # Stack notes: low-code platforms
 
-Read this in addition to the core references when the change is built on a low-code platform such as Microsoft Power Platform (Power Apps, Power Automate, Dataverse) or a similar tool. The examples use Power Platform; the principles apply to any low-code platform.
+Add these notes to core references for low-code platforms. Examples use Microsoft Power Platform (Power Apps, Power Automate, Dataverse); principles apply across platforms.
 
 ## Contents
 
@@ -15,13 +15,11 @@ Read this in addition to the core references when the change is built on a low-c
 
 ## Apply the same discipline as code
 
-Low-code apps run business processes and hold real data, so they need the same care as any other software: a stated owner, version control, separate environments, testing, access control, accessibility and a way to roll back. Use the tier model from the main skill; a flow that moves money or personal data is T2 or T3 regardless of how it was built.
+Low-code runs real business processes/data: require an owner, version control, separate environments, testing, access control, accessibility and rollback. Apply the main tier model; money/personal-data flows remain T2 or T3.
 
 ## Package work as solutions and move it through environments
 
-Microsoft's application lifecycle guidance for Power Platform treats solutions as the unit of deployment.
-
-Apply it:
+Power Platform's lifecycle guidance uses solutions as deployment units.
 
 1. Build in an unmanaged solution in a development environment. Never build directly in production or in the default environment.
 2. Export the unmanaged solution, unpack it into source control, and review the changes like code.
@@ -31,8 +29,6 @@ Apply it:
 
 ## Keep configuration and secrets out of the app
 
-Apply it:
-
 1. Use environment variables (a solution component) for values that differ between environments, such as site addresses, list names or feature switches, so the same solution moves between environments with only the values changing.
 2. Use connection references so each environment binds its own connections at import time.
 3. Store credentials in secret-type environment variables backed by Azure Key Vault, never in plain-text variables, app formulas or flow steps.
@@ -40,9 +36,7 @@ Apply it:
 
 ## Respect delegation limits
 
-When a Power Apps query cannot be delegated to the data source, the app retrieves only the first 500 records (adjustable up to 10,000) and evaluates the query on the device. If any part of the expression is non-delegable, none of it is delegated. Results are silently incomplete once the data grows past the limit.
-
-Apply it:
+Non-delegable Power Apps queries evaluate on-device over only the first 500 records (adjustable to 10,000). One non-delegable expression part prevents all delegation; larger datasets produce silently incomplete results.
 
 1. Treat every delegation warning in the editor as a defect, not a nuisance.
 2. Rewrite queries to use delegable functions and operators for the chosen data source, or move the logic server-side (a view, a stored procedure, a flow or an API).
@@ -51,9 +45,7 @@ Apply it:
 
 ## Work within data policies
 
-Administrators use data policies (data loss prevention) to control which connectors makers can combine. A blocked connector prevents saving apps or flows that use it, and policy changes can suspend non-compliant apps and flows.
-
-Apply it:
+Administrator data-loss-prevention policies restrict connector combinations. Blocked connectors prevent app/flow saves; policy changes can suspend non-compliant apps/flows.
 
 1. Check the environment's data policies before choosing connectors, and design within them.
 2. Never route data through a personal or unapproved connector to work around a policy. Ask the platform owner for an exception instead.
@@ -61,15 +53,11 @@ Apply it:
 
 ## Test, document and own the app
 
-Apply it:
-
 1. Write test cases for each screen and flow path, including failure paths (connector errors, missing permissions, empty data), and run them in the test environment before each release.
 2. Check accessibility of canvas apps against [accessibility.md](accessibility.md): labels, keyboard navigation, focus order, contrast and screen reader names.
 3. Add error handling to flows (configure run-after paths and scopes) and send failures somewhere a person will see them.
 4. Document the app's purpose, owner, data sources, connections, environment variables and support contact in the solution or the repository.
 5. Name a business owner and a technical owner, and review apps without an active owner.
-
-Check:
 
 - [ ] The change lives in a solution in source control and was deployed as managed.
 - [ ] Environment-specific values and secrets use environment variables, with secrets in Key Vault.
@@ -78,11 +66,11 @@ Check:
 
 ## Failure modes
 
-- An app filters a list with a non-delegable formula, works with 300 test records, and silently ignores most records in production.
-- A critical flow runs under a former employee's account and stops the day the account is disabled.
-- Changes are made directly in production, and nobody can say what changed or roll it back.
-- A connection string with a password is pasted into a flow step and visible to every co-owner.
-- Uninstalling a managed solution to "clean up" deletes a custom table full of business data.
+- Non-delegable filters pass with 300 test records but silently omit production data.
+- Critical flows stop when a former employee's owning account is disabled.
+- Direct production edits have neither change history nor rollback.
+- Flow-step connection passwords are visible to every co-owner.
+- Uninstalling managed solutions for cleanup deletes business-data tables.
 
 ## Sources
 

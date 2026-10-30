@@ -1,6 +1,6 @@
 # Stack notes: Azure
 
-Read this in addition to the core references when the change deploys to or calls Microsoft Azure services. These notes cover platform-specific traps only.
+Add these platform-specific notes to core references for Azure deployments or service calls.
 
 ## Contents
 
@@ -15,8 +15,6 @@ Read this in addition to the core references when the change deploys to or calls
 
 ## Authenticate with managed identities
 
-Apply it:
-
 1. Use managed identities and Microsoft Entra ID authentication for service-to-service access instead of connection strings, account keys or client secrets. Turn off key-based (local) authentication on services that support Entra ID once nothing depends on keys.
 2. Grant role assignments at the narrowest scope that works (a single resource rather than a subscription), with the least-privileged built-in role.
 3. Use `DefaultAzureCredential` for local development only. In deployed applications, Microsoft recommends replacing it with a specific credential such as `ManagedIdentityCredential`; if you keep it, set `AZURE_TOKEN_CREDENTIALS=prod` to exclude developer-tool credentials.
@@ -25,17 +23,13 @@ Apply it:
 
 ## Preview infrastructure changes
 
-Apply it:
-
 1. Run Bicep `what-if` (for example `az deployment group what-if`) before every deployment, and read every delete, replace and modify operation in the output.
 2. Include the what-if output, or a summary of it, in the PR or release record for T2 and T3 changes.
 3. Use deployment modes that cannot silently delete resources unless deletion is intended and reviewed.
 
 ## Instrument with OpenTelemetry
 
-Microsoft now presents the Microsoft OpenTelemetry Distro as the recommended way to send telemetry to Application Insights from new .NET, Node.js and Python applications; Java uses the Azure Monitor OpenTelemetry Distro. Existing users of the Azure Monitor distro need not migrate.
-
-Apply it:
+Microsoft recommends the Microsoft OpenTelemetry Distro for new .NET, Node.js and Python Application Insights integrations; Java uses Azure Monitor OpenTelemetry Distro. Existing Azure Monitor distro users need not migrate.
 
 1. Use one distro per application; do not initialise both.
 2. Initialise telemetry before the application starts handling work, and supply the Application Insights connection string from configuration, not source code.
@@ -43,7 +37,7 @@ Apply it:
 
 ## Choose model deployments for data residency
 
-Microsoft Foundry (formerly Azure AI Foundry) deployment types differ in where inference runs, while data at rest stays in the resource's geography:
+Microsoft Foundry (formerly Azure AI Foundry) deployment types change inference location; stored data stays in the resource's geography:
 
 | Deployment type family | Where prompts and responses are processed |
 |---|---|
@@ -52,16 +46,12 @@ Microsoft Foundry (formerly Azure AI Foundry) deployment types differ in where i
 | Standard and Regional Provisioned | Within the chosen Azure geography |
 | Developer | Any region, with no data residency guarantee; for evaluating fine-tuned models only |
 
-Apply it:
-
 1. Check the project's data residency requirements before choosing a deployment type, and record the choice in a decision record when personal or regulated data is involved (see [data-and-privacy.md](data-and-privacy.md)).
 2. Do not switch to a Global deployment for capacity or price without checking that cross-region processing is allowed.
 
 ## Filter Azure AI Search results by permission
 
-Azure AI Search does not authenticate the end user or check their permissions in the security filter pattern; the application must pass the caller's identities into a filter on every query.
-
-Apply it:
+Azure AI Search security filters do not authenticate users or check permissions; pass caller identities on every query.
 
 1. Store the principals allowed to read each document in a filterable `Collection(Edm.String)` field, and keep it non-retrievable.
 2. Add a filter such as `group_ids/any(g: search.in(g, 'id1, id2'))` with the caller's user and group identifiers to every query, built in one shared function.
@@ -70,9 +60,7 @@ Apply it:
 
 ## Use Prompt Shields as one layer
 
-Azure AI Content Safety's Prompt Shields detect user prompt attacks (direct jailbreak attempts) and document attacks (instructions hidden in documents, emails or web pages).
-
-Apply it:
+Azure AI Content Safety Prompt Shields detect direct jailbreaks and instructions hidden in documents, emails or web pages.
 
 1. Turn on document attack detection for retrieval and agent scenarios. User prompt attack detection is on by default in Foundry, but document attack detection is off by default.
 2. When you call the standalone Content Safety API, act on the result in your code; the API only reports whether an attack was detected.
@@ -80,11 +68,11 @@ Apply it:
 
 ## Failure modes
 
-- A storage account key is pasted into an application setting, then copied into three other services, and nobody can rotate it without an outage.
-- `DefaultAzureCredential` picks up a developer's Azure CLI login on a build agent, and a deployment runs with the wrong identity.
-- A Bicep deployment replaces a database because a property change forces re-creation, and nobody read the what-if output.
-- A Global model deployment is chosen for quota reasons and processes EU personal data outside the EU data zone.
-- A search index serves all documents to all users because the security filter was added in only one of two query paths.
+- Storage keys copied across application settings become impossible to rotate without outages.
+- `DefaultAzureCredential` uses a developer's Azure CLI login on a build agent, deploying as the wrong identity.
+- Unread Bicep what-if output hides a property change that recreates the database.
+- Quota-driven Global deployments process EU personal data outside its data zone.
+- Filtering only one of two query paths exposes all documents.
 
 ## Sources
 

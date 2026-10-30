@@ -1,6 +1,6 @@
 # AI features
 
-Read this when you build or change a feature that calls a language model or another generative model: chat, summarisation, extraction, classification, code generation, agents that call tools, and MCP servers or clients. Retrieval and evaluation are covered in [rag-and-evals.md](rag-and-evals.md).
+Use for generative-model features: chat, summarisation, extraction, classification, code generation, tool-calling agents and MCP servers/clients. See [rag-and-evals.md](rag-and-evals.md) for retrieval and evaluation.
 
 ## Contents
 
@@ -20,8 +20,6 @@ Read this when you build or change a feature that calls a language model or anot
 
 ## Decide whether a model is the right tool
 
-Apply it:
-
 1. Use deterministic code when the rules can be written down. A model is the right tool when inputs are open-ended language or images and an occasional wrong answer is tolerable or can be caught.
 2. Write down the acceptable error rate, who sees a wrong answer, and what happens next. If a wrong answer can cause harm that nobody will catch, add a human review step or do not ship.
 3. Estimate cost per request and per user per month at expected volume before building.
@@ -29,7 +27,7 @@ Apply it:
 
 ## Map the risks
 
-The OWASP Top 10 for LLM Applications, 2026 edition (published August 2026), lists the risks to check:
+Check the OWASP Top 10 for LLM Applications, 2026 edition (published August 2026):
 
 | Risk | What to do about it |
 |---|---|
@@ -44,13 +42,11 @@ The OWASP Top 10 for LLM Applications, 2026 edition (published August 2026), lis
 | LLM09 Vector and Embedding Weaknesses | Permission-aware retrieval, tenant separation in indexes, provenance of stored content |
 | LLM10 Improper Output Handling | Validate and encode output before any downstream use |
 
-For agents, OWASP's Top 10 for Agentic Applications for 2026 adds risks such as agent goal hijacking, tool misuse, identity and privilege abuse, memory and context poisoning, insecure communication between agents, cascading failures across agents, and exploitation of human trust in agents. Use both lists in the threat model (see [threat-modeling.md](threat-modeling.md)).
+OWASP's Top 10 for Agentic Applications for 2026 adds goal hijacking, tool misuse, identity/privilege abuse, memory/context poisoning, insecure inter-agent communication, cascading failures and exploitation of human trust. Use both lists in the [threat model](threat-modeling.md).
 
 ## Treat model input as untrusted
 
-Prompt injection cannot be fully prevented by prompt wording. Any text the model reads (user messages, retrieved documents, web pages, emails, tool results, file contents, code comments) can carry instructions.
-
-Apply it:
+Prompt wording cannot fully prevent injection. Instructions can hide in user messages, retrieved documents, web pages, emails, tool results, files or code comments.
 
 1. Keep trusted instructions separate from untrusted content, and mark content clearly as data. Labels and delimiters help the model but are not a security boundary.
 2. Enforce every security decision in code outside the model: authorisation, input limits, which tools exist, which arguments are allowed.
@@ -60,8 +56,6 @@ Apply it:
 
 ## Treat model output as untrusted
 
-Apply it:
-
 1. Request structured output (JSON matching a schema) when code will consume the result, and validate it against the schema. Reject or retry on validation failure instead of guessing.
 2. Encode output for its destination before rendering it: HTML-escape it, and do not let model-generated Markdown load remote images or links automatically, because a crafted URL can carry data out of the page.
 3. Never execute model output as code, SQL, shell commands or file paths without a sandbox, an allowlist and, for consequential actions, human review.
@@ -69,9 +63,7 @@ Apply it:
 
 ## Constrain agents and tools
 
-Simon Willison's lethal trifecta is the core test: an agent that has access to private data, is exposed to untrusted content, and can communicate externally can be tricked into sending that data to an attacker. Remove at least one of the three for any agent that reads untrusted content.
-
-Apply it:
+Simon Willison's lethal trifecta: private data + untrusted content + external communication enables exfiltration to attackers. Remove at least one capability from any agent reading untrusted content.
 
 1. Give each tool the narrowest capability that works: read-only where possible, scoped to the current user's data, with an allowlist of destinations and argument validation.
 2. Authorise every tool call in code against the end user's permissions, not the agent's service identity.
@@ -83,7 +75,7 @@ Apply it:
 
 ## Build MCP servers and clients safely
 
-The Model Context Protocol's security best practices give specific rules. In short:
+Model Context Protocol security requirements:
 
 1. An MCP server must not accept tokens that were not issued for it, and must not pass a client's token through to downstream APIs ("token passthrough" is forbidden by the specification).
 2. An MCP server that proxies a third-party API with a static client identifier must obtain consent per client before forwarding authorisation requests, to avoid confused-deputy attacks.
@@ -94,16 +86,12 @@ The Model Context Protocol's security best practices give specific rules. In sho
 
 ## Protect data in prompts and context
 
-Apply it:
-
 1. Never put secrets, credentials or internal-only data in system prompts or hidden context. Assume anything the model can see can be extracted.
 2. Send the model only the personal data the task needs; mask or pseudonymise the rest.
 3. Check the provider's data retention, training use and processing location against the project's requirements before sending real data (see [data-and-privacy.md](data-and-privacy.md)).
 4. Apply the user's permissions to everything placed in the context, including retrieved documents and tool results.
 
 ## Engineer for reliability, cost and latency
-
-Apply it:
 
 1. Set timeouts on model calls, retry 429 and 5xx responses with backoff and jitter, and honour `Retry-After` (see [reliability-performance.md](reliability-performance.md)).
 2. Stream responses for interactive use, and set a maximum output length for every call.
@@ -114,15 +102,11 @@ Apply it:
 
 ## Manage prompts and models as code
 
-Apply it:
-
 1. Keep prompts in version control as templates, reviewed like code, with untrusted values inserted in clearly delimited slots.
 2. Run the evaluation suite whenever a prompt, model, retrieval setting or tool definition changes, and compare results with the previous version before shipping.
 3. Record the model identifier, prompt version and key parameters with every request, so any answer can be traced to its configuration.
 
 ## Observe the feature
-
-Apply it:
 
 1. Record per request: model, prompt version, input and output token counts, latency, finish reason, cost, tool calls and errors.
 2. Follow the OpenTelemetry generative AI semantic conventions for attribute names where your tooling supports them. They are still at Development stability, so pin the convention version and expect renames.
@@ -131,15 +115,11 @@ Apply it:
 
 ## Meet governance and legal duties
 
-The EU AI Act entered into force on 1 August 2024, and the AI Omnibus amendments entered into force on 27 July 2026. According to the European Commission's timeline, prohibited practices have applied since February 2025, transparency obligations from August 2026, high-risk obligations for Annex III use cases from 2 December 2027, and for Annex I products from 2 August 2028.
-
-Apply it:
+The EU AI Act entered into force on 1 August 2024; AI Omnibus amendments on 27 July 2026. The European Commission's timeline: prohibited practices since February 2025; transparency obligations from August 2026; high-risk Annex III obligations from 2 December 2027; Annex I product obligations from 2 August 2028.
 
 1. Tell people when they are interacting with an AI system, and mark AI-generated or manipulated content where the transparency rules require it.
 2. Flag to the user, before building, any use that may be high-risk under the Act (for example recruitment, credit scoring, education or access to essential services) or prohibited. Classification is a legal decision for humans.
 3. Use NIST's AI Risk Management Framework 1.0 and its Generative AI Profile (NIST AI 600-1) as a structure for identifying, measuring and managing risks, especially when no regulation applies.
-
-Check:
 
 - [ ] The threat model covers the OWASP LLM risks, and the lethal trifecta is broken for any agent reading untrusted content.
 - [ ] Tool calls are authorised in code, and consequential actions need human approval.
@@ -149,12 +129,12 @@ Check:
 
 ## Failure modes
 
-- A support bot summarises an email that contains hidden instructions, and forwards the customer database to an external address.
-- A model-generated SQL query runs against production with the application's full privileges.
-- An API key embedded in the system prompt is extracted by a user who asks the model to repeat its instructions.
-- A loop of tool calls runs overnight and spends the monthly budget.
-- The provider retires a model version, the replacement behaves differently, and nobody notices because there are no evaluations.
-- Prompts and completions containing customer data are logged in plain text to a third-party observability service.
+- Hidden email instructions make a support bot exfiltrate the customer database.
+- Model-generated SQL runs in production with full application privileges.
+- A user extracts a system-prompt API key by requesting its instructions.
+- Overnight tool-call loops exhaust the monthly budget.
+- Model retirement changes behaviour unnoticed because evaluations are missing.
+- Customer prompts/completions reach third-party telemetry as plaintext.
 
 ## Sources
 

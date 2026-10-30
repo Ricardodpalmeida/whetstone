@@ -1,6 +1,6 @@
 # Learning loop
 
-Read this at the end of every task at T1 or above, after an incident, when a reviewer catches something you missed, and whenever the user corrects you.
+Use after T1+ tasks, incidents, reviewer findings and user corrections.
 
 ## Contents
 
@@ -15,20 +15,20 @@ Read this at the end of every task at T1 or above, after an incident, when a rev
 
 ## Close each task with a short retrospective
 
-Compound engineering, as described by Dan Shipper and Kieran Klaassen, adds a fourth step to plan, work and review: compound, so that "each unit of engineering work should make subsequent units easier". Skipping it leaves you doing traditional engineering with AI assistance.
+Dan Shipper and Kieran Klaassen's compound engineering adds a fourth step after plan, work and review: compound, so "each unit of engineering work should make subsequent units easier". Without it, AI-assisted work does not compound.
 
-Ask four questions before you report the task as done:
+Before reporting completion, ask:
 
 1. What surprised me, or took longer than it should have?
 2. What did a test, a reviewer or the user catch that I should have caught myself?
 3. Did I rediscover something that a previous session must also have had to discover?
 4. What would stop this whole class of problem from recurring?
 
-If every answer is "nothing", record nothing. Most tasks teach nothing new, and noise in instruction files has a cost.
+If all answers are "nothing", record nothing. Most tasks teach nothing new; instruction noise has a cost.
 
 ## Prefer prevention over memory
 
-A rule an agent must remember is the weakest form of prevention. Choose the strongest option that is proportionate:
+Remembered rules are the weakest prevention. Choose the strongest proportionate option:
 
 | Strength | Mechanism | Example |
 |---|---|---|
@@ -37,11 +37,9 @@ A rule an agent must remember is the weakest form of prevention. Choose the stro
 | Medium | A documented convention in the repository's instruction file | "Use the shared HTTP client in `lib/http`; it sets timeouts and tracing" |
 | Weak | A note in a personal or session memory | Useful for preferences, not for safety |
 
-Claude Code's documentation makes the same point: instruction files are context, not enforced configuration, and an action that must always be blocked needs a hook instead.
+Claude Code distinguishes instruction context from enforced configuration: use a hook for actions that must always be blocked.
 
 ## Write lessons where the next session will read them
-
-Apply it:
 
 1. Put project lessons in the repository's existing instruction file. Claude Code reads `CLAUDE.md` (or `.claude/CLAUDE.md`) and reads `AGENTS.md` when there is no `CLAUDE.md`; many other agents, including OpenClaw agents, read `AGENTS.md`. Use whichever file the repository already has. Do not create a second file that duplicates it.
 2. Keep each instruction file short. Claude Code's guidance targets under 200 lines per `CLAUDE.md`, because longer files consume context and reduce adherence.
@@ -50,9 +48,7 @@ Apply it:
 
 ## Respect consent and scope
 
-Instruction files change how every future session behaves, so changes to them must be visible and approved.
-
-Apply it:
+Instruction changes affect future sessions; make them visible and approved.
 
 1. Make changes to repository instruction files as part of the same reviewed change as the work that taught the lesson, and call them out in the PR description or final report.
 2. Never edit personal or global instruction files (for example `~/.claude/CLAUDE.md`, an OpenClaw agent's workspace files, or another tool's memory store) without asking. Propose the exact text and where it would go, and let the user apply or approve it.
@@ -60,8 +56,6 @@ Apply it:
 4. Never weaken a safety rule in an instruction file to make your current task easier. Raise the conflict with the user instead.
 
 ## Write lessons that work
-
-Apply it:
 
 1. State each lesson as a specific, checkable instruction with its reason: "Run `make db-test` before committing migrations, because the unit suite uses SQLite and misses Postgres-only syntax."
 2. Prefer one line per rule, grouped under clear headings. Add a short example only when the rule is easy to misread.
@@ -85,14 +79,10 @@ Good:
 
 ## Turn incidents and reviews into improvements
 
-Apply it:
-
 1. Give every action item from an incident review an owner, a due date and a tracking issue, and check later that it was done. Google's postmortem chapter defines a postmortem as including the follow-up actions that prevent recurrence, and warns that "an unreviewed postmortem might as well never have existed".
 2. When the same review comment appears twice, turn it into an automated check or a documented convention.
 3. When a runbook step was wrong or missing during an incident, fix the runbook in the follow-up change.
 4. When the user corrects your approach, ask whether the correction is project-specific (propose a repository instruction), personal (propose a personal instruction), or one-off (record nothing).
-
-Check:
 
 - [ ] The retrospective questions were asked, and any lesson was recorded in the strongest proportionate form.
 - [ ] Repository instruction changes are in the diff and mentioned in the report.
@@ -101,11 +91,11 @@ Check:
 
 ## Failure modes
 
-- Every task appends a paragraph to `CLAUDE.md`, the file grows to a thousand lines, and adherence drops for all of it.
-- A lesson is written to memory when it should have been a test, and the same bug returns when a different agent or person works on the code.
-- An agent silently edits the user's global instruction file, changing behaviour across unrelated projects.
-- Contradictory rules accumulate ("always use the ORM", "write raw SQL for reports"), and the agent picks one at random.
-- Incident action items are recorded but never assigned, and the same incident happens again.
+- Per-task paragraphs grow `CLAUDE.md` to a thousand lines and reduce adherence.
+- Lessons stored only in memory let bugs recur with other agents or people.
+- Silent global-instruction edits change unrelated projects' behaviour.
+- Contradictions ("always use the ORM", "write raw SQL for reports") invite arbitrary choices.
+- Unassigned incident actions allow recurrence.
 
 ## Sources
 

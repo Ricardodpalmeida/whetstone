@@ -1,6 +1,6 @@
 # Reliability and performance
 
-Read this when code calls anything over a network, runs background work, handles significant load, or has a latency, throughput or availability target.
+Use for network calls, background work, significant load or latency, throughput and availability targets.
 
 ## Contents
 
@@ -17,7 +17,7 @@ Read this when code calls anything over a network, runs background work, handles
 
 ## Put a timeout on every remote call
 
-A call without a timeout can hold a thread, a connection and a user's request forever. Many clients do not set one for you.
+Missing timeouts can hold threads, connections and user requests forever; many clients default to none.
 
 | Client | Default behaviour | What to do |
 |---|---|---|
@@ -26,8 +26,6 @@ A call without a timeout can hold a thread, a connection and a user's request fo
 | .NET `HttpClient` | 100 seconds | Set attempt and total timeouts, for example through a resilience handler (see [stack-dotnet.md](stack-dotnet.md)) |
 | `fetch` in browsers and Node.js | No timeout option of its own | Pass `signal: AbortSignal.timeout(ms)` |
 
-Apply it:
-
 1. Set connect and read (or total) timeouts on every HTTP, database, cache, queue and model call.
 2. Derive the value from the dependency's measured latency. The AWS Builders' Library suggests choosing an acceptable rate of false timeouts (for example 0.1 percent) and setting the timeout near the matching latency percentile (p99.9).
 3. Propagate deadlines. When a request arrives with 2 seconds left, downstream calls get what remains of those 2 seconds, not a fresh hard-coded value. Check the remaining time before expensive steps and stop doomed work early.
@@ -35,9 +33,7 @@ Apply it:
 
 ## Retry only what is safe
 
-Retries help with brief, transient failures and make sustained failures worse. Every retry spends server capacity to improve one caller's odds.
-
-Apply it:
+Retries trade server capacity for one caller's success, helping transient failures but worsening sustained ones.
 
 1. Retry only operations that are idempotent, or made idempotent with an idempotency key (see [api-design.md](api-design.md)).
 2. Retry only transient failures: connection errors, timeouts, and HTTP 408, 429, 500, 502, 503 and 504. Do not retry other 4xx responses. Honour a `Retry-After` header when one is sent.
@@ -57,8 +53,6 @@ def backoff_delay(attempt: int, base: float = 0.1, cap: float = 5.0) -> float:
 
 ## Contain failures
 
-Apply it:
-
 1. Wrap calls to a dependency that can fail in bulk with a circuit breaker: after failures cross a threshold, fail fast for a cooling period, then let a trial call through.
 2. Bound concurrency per dependency (a bulkhead), so one slow dependency cannot consume every worker or connection.
 3. Bound every queue and buffer, and decide what happens when it is full: reject, shed the oldest, or apply back-pressure to the producer.
@@ -68,16 +62,12 @@ Apply it:
 
 ## Health checks and graceful lifecycle
 
-Apply it:
-
 1. Expose separate signals for liveness (the process is not stuck), readiness (it can serve traffic now) and, for slow starters, start-up.
 2. Keep liveness checks local to the process. If liveness depends on a database, a database outage makes the orchestrator restart every replica at once, adding load at the worst moment. Put dependency checks in readiness.
 3. On a termination signal, stop accepting new work, mark the instance not ready, finish in-flight work within a deadline, then exit.
 4. Start quickly. Long start-up times slow down deploys, rollbacks and autoscaling.
 
 ## Measure before you optimise
-
-Apply it:
 
 1. Define the target first, as a percentile with a load level: "p95 under 300 ms at 200 requests per second".
 2. Measure the current state with production-like data volumes. Profile to find where time actually goes before changing code.
@@ -99,7 +89,7 @@ Apply it:
 
 ## Meet front-end performance targets
 
-Google's Core Web Vitals set three thresholds, measured at the 75th percentile of page loads, split by mobile and desktop:
+Google's Core Web Vitals thresholds use the 75th percentile, separately for mobile and desktop:
 
 | Metric | Good threshold |
 |---|---|
@@ -107,18 +97,14 @@ Google's Core Web Vitals set three thresholds, measured at the 75th percentile o
 | Interaction to Next Paint (responsiveness) | 200 milliseconds or less |
 | Cumulative Layout Shift (visual stability) | 0.1 or less |
 
-Measure them with field data from real users where possible, and add a performance budget (bundle size, Lighthouse score or lab metrics) to CI for pages that matter.
+Prefer real-user field measurements; add CI budgets (bundle size, Lighthouse score or lab metrics) for important pages.
 
 ## Test under load
-
-Apply it:
 
 1. Load test changes on paths with a stated target, using production-like data and traffic shape.
 2. Push components until they break, and observe how they fail and how they recover. A system that recovers on its own after overload is worth more than one with a slightly higher limit.
 3. Run a soak test (steady load for hours) before T3 releases to find leaks and slow degradation.
 4. Test client behaviour against a dependency that never responds, to prove the timeouts and breakers work.
-
-Check:
 
 - [ ] Every new remote call has a timeout, and retries are bounded, jittered and limited to idempotent operations.
 - [ ] Liveness checks do not depend on other services.
@@ -126,11 +112,11 @@ Check:
 
 ## Failure modes
 
-- A dependency hangs, calls without timeouts pile up, and the whole service stops responding.
-- Every layer retries, and a brief database blip becomes a self-inflicted outage.
-- A non-idempotent payment call is retried after a timeout, and the customer is charged twice.
-- A liveness probe checks the database, and a database failover restarts the entire fleet.
-- An optimisation is merged on intuition, makes no measurable difference, and adds a cache that serves stale data.
+- Hanging dependencies accumulate untimed calls until the service stops responding.
+- Retries at every layer turn a database blip into an outage.
+- Retrying non-idempotent timed-out payments double-charges customers.
+- Database-dependent liveness probes restart the fleet during failover.
+- Intuition-led optimisations add stale caches without measurable benefit.
 
 ## Sources
 
