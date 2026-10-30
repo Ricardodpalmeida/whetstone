@@ -1,7 +1,7 @@
 {
   "name": "whetstone",
   "displayName": "Whetstone",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Risk-aware review for consequential code changes: compatibility, useful verification and recovery without mandatory ceremony.",
   "author": {
     "name": "Ricardo Almeida",

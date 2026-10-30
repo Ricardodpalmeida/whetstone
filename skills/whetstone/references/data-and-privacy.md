@@ -21,10 +21,11 @@ Review generated SQL for drops disguised as renames, table rewrites and locks. C
 
 ## Preserve integrity and recovery
 
+- Represent amounts with explicit currency/unit and rounding rules; use decimal or appropriately scaled integers rather than binary floating point for exact monetary arithmetic. Keep calendar dates distinct from instants and local schedules; test timezone/DST transitions where they affect the contract.
 - Use transactions for changes that must succeed together, and constraints or atomic conditional updates for concurrent writers. A check followed by a write can race.
 - Make retries/backfills idempotent using a stable key or bounded partition. Track progress and test interruption followed by restart.
 - Test important migrations against the actual engine with representative data. Compare values and invariants, not only row counts. Bound lock waits and workload where other clients share the database.
-- For destructive work, verify the recovery artifact and restore procedure before applying it. Replication can copy corruption or deletion; it is not an independent backup.
+- For destructive work, verify the recovery artifact and restore procedure before applying it. For material data, establish acceptable data loss and restore time, then check that recovery meets them. Replication can copy corruption or deletion; it is not an independent backup.
 
 ## Minimize exposure
 

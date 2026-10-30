@@ -6,6 +6,8 @@ Use before an authorized publication, deployment, infrastructure change or incid
 
 Confirm the account, environment, artifact/commit, version and affected users. Check that the user's existing authorization covers this action; do not request it again for the same scope. Prepare the exact change and verification before asking for a missing decision. Follow required project checks and approvals without inventing additional gates.
 
+Inspect staged and unstaged changes before preparing the artifact. Preserve unrelated work and shared history; a failed check does not authorize discarding edits or bypassing hooks. Update affected commands, defaults and contracts with the implementation; exercise documented commands that changed and identify any not verified.
+
 Inspect a deployment plan for unexpected deletes, replacements, permission changes or data movement. Use the tested artifact rather than rebuilding different contents for production. Preserve unrelated configuration and the previous artifact when needed for recovery.
 
 ## Match recovery to the effect
@@ -16,6 +18,10 @@ A code rollback is safe only if it still understands the current data/configurat
 
 After the action, check user-visible behavior and the expected version. A successful upload, accepted request or access-control page does not prove publication, application health or delivery. Distinguish queued checks from a live result. If an external check fails, retain its status and artifact; do not create repeated releases merely to evade it.
 
+## Service lifecycle
+
+When changing health checks or shutdown, separate serving readiness from process liveness. A shared dependency outage should not make every instance fail liveness and restart. Gate slow startup separately when supported. Stop accepting new work before draining in-flight requests/jobs within a bounded shutdown deadline; verify what happens to unfinished work.
+
 ## During an incident
 
 Reduce ongoing impact first using the authorized, least disruptive intervention. Verify the affected environment and available evidence; do not assume rolling back is safe after a data change. Escalate a missing consequential decision while continuing read-only diagnosis.
@@ -24,6 +30,7 @@ After mitigation, confirm recovery and investigate the cause. Add a regression c
 
 ## Sources
 
+- [Kubernetes probe semantics](https://kubernetes.io/docs/concepts/workloads/pods/probes/)
 - [Google SRE: canarying releases](https://sre.google/workbook/canarying-releases/)
 - [Google SRE: managing incidents](https://sre.google/sre-book/managing-incidents/)
 - [Google SRE: postmortem culture](https://sre.google/sre-book/postmortem-culture/)

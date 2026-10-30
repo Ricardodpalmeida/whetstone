@@ -14,7 +14,10 @@ List the protected asset, who can influence the input, where authority changes a
 | SQL or shell | Bind values or pass an argument list. Validate identifiers separately; escaping a shell string is not the default design. |
 | HTML, files or exports | Use contextual encoding or a maintained sanitizer. Resolve paths within the authorized root, accounting for symlinks. Constrain upload size/type and prevent spreadsheet formula execution from untrusted cells. |
 | Server-side URL fetch | Restrict destinations, validate resolved addresses and redirects, and prevent DNS rebinding. Do not let arbitrary input reach internal or metadata endpoints. |
+| Serialized objects | Use data-only decoding and explicit allowed types. Do not deserialize untrusted input with pickle, unsafe YAML loaders, BinaryFormatter or unrestricted type activation. |
 | Secrets | Use the existing secret store and least-privilege identity. Redact diagnostics. Revoke an exposed credential; removing its text does not revoke it. |
+
+For business operations, test skipped/reordered steps, replay and simultaneous requests. Assign owner, role, price and entitlement from authoritative server state; arbitrary client fields must not overwrite them. Bound expensive work reachable through cheap requests.
 
 ## Sign-in and sessions
 
@@ -32,6 +35,8 @@ Exercise denial, malformed input and dependency failure, as well as the successf
 
 - [OWASP authorization](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html)
 - [OWASP SSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html)
+- [OWASP deserialization](https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html)
+- [OWASP business logic](https://cheatsheetseries.owasp.org/cheatsheets/Business_Logic_Security_Cheat_Sheet.html)
 - [OWASP password storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 - [NIST authentication guidance](https://pages.nist.gov/800-63-4/sp800-63b.html)
 - [OAuth security, RFC 9700](https://www.rfc-editor.org/rfc/rfc9700.html)

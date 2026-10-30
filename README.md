@@ -20,7 +20,7 @@ The user and repository define the scope and authorization. Whetstone does not a
 - One optional [change note](skills/whetstone/templates/change-note.md) for a consequential decision or recovery record.
 - An optional diff scanner for review cues, likely secrets and test-weakening signals.
 
-Version 0.2.0 removes automatic T0-T3 workflow requirements, mandatory retrospectives and generic engineering tutorials. Existing scanner arguments, JSON fields and exit codes are retained. The previous reference library remains in Git history.
+Version 0.2.0 removes automatic T0-T3 workflow requirements, mandatory retrospectives and generic engineering tutorials. Existing scanner arguments, JSON fields and exit codes are retained. The previous reference library remains in Git history. Version 0.2.1 restores concrete failure checks from that library, including service lifecycle, unsafe deserialization, event publication gaps, retrieval/index compatibility and runtime-specific traps. Generic code-minimization and response-length instructions are outside Whetstone's scope.
 
 ## Install
 
@@ -29,7 +29,7 @@ Copy only `skills/whetstone`, including its supporting files, into your agent's 
 From ClawHub, once this version is public:
 
 ```text
-clawhub install @ricardodpalmeida/whetstone --version 0.2.0
+clawhub install @ricardodpalmeida/whetstone --version 0.2.1
 ```
 
 Or use this repository with the skills CLI:
@@ -82,4 +82,4 @@ Keep rules only when they prevent a concrete failure or change a useful decision
 
 [MIT-0](LICENSE). Copyright 2026 Ricardo Almeida.
 
-A [four-case local forward smoke test](evals/forward-smoke.json) checked a typo, an authorized empty-cart behavior change, payment retries and document access filtering. All passed with two isolated evaluating agents and parent inspection. This is limited evidence, without a control group or cross-model performance claim.
+At version 0.2.0, a [four-case local forward smoke test](evals/forward-smoke.json) checked a typo, an authorized empty-cart behavior change, payment retries and document access filtering. All passed with two isolated evaluating agents and parent inspection. This is limited evidence, without a control group or cross-model performance claim.
