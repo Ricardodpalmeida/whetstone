@@ -40,19 +40,31 @@
     "should_trigger": true
   },
   {
-    "query": "Fix recieve to receive in README",
-    "should_trigger": false
-  },
-  {
     "query": "Rename this local variable to make it clearer",
-    "should_trigger": false
+    "should_trigger": true
   },
   {
-    "query": "Write a small throwaway example using the installed framework and synthetic data",
-    "should_trigger": false
+    "query": "Add a small throwaway example to this repo using the installed framework and synthetic data",
+    "should_trigger": true
   },
   {
     "query": "Change the button text from Save to Apply",
+    "should_trigger": true
+  },
+  {
+    "query": "Refactor parse_invoice into smaller functions without changing its behavior",
+    "should_trigger": true
+  },
+  {
+    "query": "Bump requests from 2.31 to 2.32 in our requirements file",
+    "should_trigger": true
+  },
+  {
+    "query": "test_checkout_total started failing on main this morning; debug it",
+    "should_trigger": true
+  },
+  {
+    "query": "Fix recieve to receive in README",
     "should_trigger": false
   },
   {
@@ -77,6 +89,18 @@
   },
   {
     "query": "Summarise this incident report for a nontechnical reader",
+    "should_trigger": false
+  },
+  {
+    "query": "Explain what the regex ^[a-z0-9]+(-[a-z0-9]+)*$ matches",
+    "should_trigger": false
+  },
+  {
+    "query": "Write release notes prose for version 2.4 from this list of merged changes",
+    "should_trigger": false
+  },
+  {
+    "query": "Draft an email to customers about yesterday's outage",
     "should_trigger": false
   }
 ]

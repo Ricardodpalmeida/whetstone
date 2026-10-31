@@ -4,7 +4,7 @@ Use for a changed trust boundary, authentication, permissions, untrusted input o
 
 ## Identify the failure to prevent
 
-List the protected asset, who can influence the input, where authority changes and how the new path could be abused. Connect each material threat to a control and a check. A short PR note is enough when it captures the decision; reuse an existing threat model when one exists.
+List the protected asset, who can influence the input, where authority changes and how the new path could be abused. Connect each material threat to a control and a check. A short PR note is enough when it captures the decision; reuse an existing threat model when one exists. For a new trust boundary, the short method in [threat modeling](threat-modeling.md) helps.
 
 ## Controls that must survive
 

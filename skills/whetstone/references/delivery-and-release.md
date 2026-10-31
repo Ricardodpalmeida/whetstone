@@ -10,7 +10,7 @@ Inspect a deployment plan for unexpected deletes, replacements, permission chang
 
 ## Match recovery to the effect
 
-For a reversible publication, verify the published version and how to withdraw it. For a production service, identify the health signal, stop condition and rollback/forward-fix path. Use a staged rollout when impact or uncertainty warrants it, not for every documentation update.
+For a reversible publication, verify the published version and how to withdraw it. For a production service, identify the health signal, stop condition and rollback/forward-fix path. Use a staged rollout when impact or uncertainty warrants it, not for every documentation update. The optional [change note](../templates/change-note.md) records the target, recovery and stop condition when reviewers need them.
 
 A code rollback is safe only if it still understands the current data/configuration. Rehearse a material recovery path in a suitable environment and state any part not exercised. Compare a canary with its control; aggregate service metrics can hide a severe problem affecting a small rollout.
 
@@ -20,7 +20,7 @@ After the action, check user-visible behavior and the expected version. A succes
 
 Reduce ongoing impact first using the authorized, least disruptive intervention. Verify the affected environment and available evidence; do not assume rolling back is safe after a data change. Escalate a missing consequential decision while continuing read-only diagnosis.
 
-After mitigation, confirm recovery and investigate the cause. Add a regression check, alert or procedure correction that addresses the demonstrated failure. A formal incident review belongs where the impact or team process requires it; routine tasks do not need a retrospective document.
+After mitigation, confirm recovery and investigate the cause ([debugging](debugging.md)). Add a regression check, alert or procedure correction that addresses the demonstrated failure. A formal [incident review](../templates/incident-review.md) belongs where the impact or team process requires it; routine tasks do not need a retrospective document.
 
 ## Sources
 

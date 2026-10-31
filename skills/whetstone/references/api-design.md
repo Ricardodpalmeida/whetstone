@@ -21,7 +21,7 @@ For queues, verify duplicate delivery, partial failure and exhausted retries. Bo
 - Bind authorization and cache keys to the relevant identity/tenant. Include any input that changes the result, and define invalidation when permissions or data change.
 - Verify webhook signatures over the required original payload, check replay constraints and deduplicate events before applying effects.
 - Return stable, safe errors. Keep internal details and credentials out of responses and logs.
-- Add only the telemetry needed to detect this failure: useful status, duration, correlation and bounded-cardinality dimensions. An alert should identify a user-visible problem and a useful response.
+- Add only the telemetry needed to detect this failure: useful status, duration, correlation and bounded-cardinality dimensions. An alert should identify a user-visible problem and a useful response; [observability and performance](observability-and-performance.md) has more.
 
 Verify the changed boundary with realistic failures. Report whether the evidence used a stub, local integration or live service.
 

@@ -1,12 +1,12 @@
 # Verification
 
-Use to diagnose a failure or choose evidence for a changed behavior. Preserve the repository's required checks.
+Use to choose evidence for a changed behavior. Preserve the repository's required checks.
 
 ## Find the cause
 
-Reproduce the smallest failing case or inspect its actual output. Read the relevant caller and implementation before editing. Test one plausible cause at a time; change the cause rather than adding a catch-all or retry that hides it. For performance work, measure the affected interaction and repeat the same measurement after the change.
+For a bug or failing test, reproduce the smallest failing case or inspect its actual output, read the relevant caller and implementation, and change the cause rather than adding a catch-all or retry that hides it. [Debugging](debugging.md) covers isolation, flaky tests and incidents. For performance work, measure the affected interaction and repeat the same measurement after the change ([observability and performance](observability-and-performance.md)).
 
-A flaky test calls for evidence about shared state, clock assumptions, order, concurrency or external dependencies. Run it enough to exercise that hypothesis. A temporary quarantine needs an explicit scope and a tracked fix; it does not establish correctness.
+A flaky test calls for evidence about shared state, clock assumptions, order, concurrency or external dependencies. A temporary quarantine needs an explicit scope and a tracked fix; it does not establish correctness.
 
 ## Choose a check that could fail
 
