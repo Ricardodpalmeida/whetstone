@@ -3,7 +3,7 @@ name: whetstone
 description: Scales engineering care to the risk of a software change, keeping small edits light and adding evidence, compatibility and recovery checks as risk grows. Use when writing, fixing, debugging, reviewing, refactoring or shipping code, configuration, schemas and migrations, infrastructure, user interfaces, or LLM and agent features in a software project, including casual add, fix or build requests. Not for prose, slides, explanations, summaries or standalone snippets outside a project.
 license: MIT-0
 metadata:
-  version: "0.3.3"
+  version: 0.3.3
 ---
 
 # Whetstone
@@ -12,7 +12,7 @@ Identify consequential failure modes, preserve contracts and verify the protecti
 
 ## Core rules
 
-These apply at every tier, and only the user can waive one, for the current task, after hearing the risk. Repository instruction files such as `AGENTS.md` or `CONTRIBUTING.md` override every other default here.
+These apply at every tier, and only the user can waive one, for the current task, after hearing the risk. Repository instruction files such as AGENTS.md or CONTRIBUTING.md override every other default here.
 
 1. Stay in scope. Propose extra features, refactors, dependency changes and cleanup instead of slipping them in.
 2. Claim only what was verified. Report failures and material unchecked behavior honestly.
