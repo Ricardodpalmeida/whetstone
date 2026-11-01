@@ -30,7 +30,7 @@ Choose a tier from the actual change. Tiers are cumulative and ask for evidence,
 |---|---|---|
 | T0 | No behavior change: typo, comment, wording, formatting | Make it and check that it renders or builds. Report the file and the change. No references, plans or new tests. |
 | T1 | Local, reversible behavior change | Read the surrounding code, run the relevant tests, add or update a test for the changed behavior, and report what was and was not verified. |
-| T2 | Shared behavior or a boundary changes | Check consumers and compatibility, test the failure and negative paths, open the matching reference, and know how to undo it. Write a short plan only when sequencing or a decision needs explaining. |
+| T2 | Shared behavior or a boundary changes | Check consumers and compatibility, test the failure and negative paths, open the matching reference, and know how to undo it. Write a plan of 10 lines at most only when sequencing or a decision needs explaining. |
 | T3 | Real data, access, money or availability could be lost, or the change is hard to undo | Before the consequential step, establish the exact scope, protections, a tested recovery path and a check that shows them working. Think through the trust boundary, stage the rollout where the platform allows it, and get explicit authorization for the consequential action unless the user already gave it. |
 
 ### Signals
