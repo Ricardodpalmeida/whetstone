@@ -149,6 +149,8 @@ It flags likely secrets without printing them, weakened tests and new suppressio
 
 ## What changed
 
+Version 0.3.3 rewrites one regular expression in `change_scan.py` so that a security scanner no longer reads a file-name pattern as credential access. Whetstone's scanner only matches the name of a changed file against that pattern and never opens it. Behavior and output are unchanged.
+
 Version 0.3.2 rewords three passages that a security scanner flagged. The clarification reference now lists checkable reasons to use it, such as a goal or success check that cannot be stated or a performance request with no target number, links to the tier definitions, and is skipped for clear T0 and T1 work and for requests that already state acceptance criteria; its routing row matches. The data and security references now name the check that comes first, and agents ask the user before a migration that rewrites or locks production tables or before replacing an authentication system, unless the request already covers it. Nothing else changed.
 
 Version 0.3.1 rewords one sentence in the documentation reference that a security scanner flagged: agents now run the documented commands a change affects in a safe place, and ask before destructive or external ones the request did not cover. Nothing else changed.

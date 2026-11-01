@@ -1,7 +1,7 @@
 {
   "name": "whetstone",
   "displayName": "Whetstone",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Risk-scaled engineering care for code changes: T0 to T3 escalation signals, honest verification reports and recovery checks, with small edits kept light.",
   "author": {
     "name": "Ricardo Almeida",
