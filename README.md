@@ -147,7 +147,9 @@ python3 <skill-dir>/scripts/change_scan.py --base main --json
 
 It flags likely secrets without printing them, weakened tests and new suppressions, and suggests a tier from the changed paths and text, shown as `Review cue` in text and as `minimum_tier` with `tier_reasons` in JSON. Treat that tier as a floor to check against the change's actual impact, not a verdict or a release gate. It exits 0 with no blocking findings, 1 for a likely secret (with `--strict`, also for test weakening or a new suppression) and 2 on a usage or read failure. A known false positive can carry `change-scan: ignore` or `pragma: allowlist secret` on its line. Binary content and untracked files over 1 MB are skipped, and a clean scan is not a security audit.
 
-## What changed in 0.3.0
+## What changed
+
+Version 0.3.1 rewords one sentence in the documentation reference that a security scanner flagged: agents now run the documented commands a change affects in a safe place, and ask before destructive or external ones the request did not cover. Nothing else changed.
 
 Version 0.3.0 keeps the lean 0.2.x base, its authorization model and the concrete failure checks of 0.2.1 and 0.2.2. It brings back what 0.2.0 dropped: a description that covers software changes broadly, T0 to T3 as escalation signals instead of gates, an explicit "Not verified" line, a compact definition of done, and short versions of seven references and five templates. Scanner arguments, JSON fields and exit codes are unchanged, and the full 0.1.x library remains in Git history.
 
