@@ -4,7 +4,7 @@ Use when a change alters setup, configuration, commands, an API, user-visible be
 
 ## Keep docs matching behavior
 
-Update the affected documentation in the same change as the behavior. Correct or delete text that is no longer true; wrong documentation is worse than none because readers trust it. Run every documented command, keep real secrets out of examples, and date statements that will go stale.
+Update the affected documentation in the same change as the behavior. Correct or delete text that is no longer true; wrong documentation is worse than none because readers trust it. Run the documented commands the change affects in a safe place, such as a sandbox, a test project or a dry run, and ask before running any that delete data, change production or have external effects, unless the request already covers them. Keep real secrets out of examples, and date statements that will go stale.
 
 | Change | Update |
 |---|---|
