@@ -1,8 +1,8 @@
 {
   "name": "whetstone",
   "displayName": "Whetstone",
-  "version": "0.2.2",
-  "description": "Risk-aware review for consequential code changes: compatibility, useful verification and recovery without mandatory ceremony.",
+  "version": "0.3.0",
+  "description": "Risk-scaled engineering care for code changes: T0 to T3 escalation signals, honest verification reports and recovery checks, with small edits kept light.",
   "author": {
     "name": "Ricardo Almeida",
     "url": "https://github.com/Ricardodpalmeida"

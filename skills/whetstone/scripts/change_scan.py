@@ -10,9 +10,10 @@ Examples:
   git diff | python3 change_scan.py --diff-file -
   python3 change_scan.py --json           # machine-readable output
 
-The legacy tier label is a heuristic based on paths and changed lines, not a
-workflow requirement. The reviewer decides impact from the actual context. Secret values are never printed: findings show
-the rule, the location and a redacted preview.
+The tier it prints (T0 to T3) is a suggested floor based on file paths and
+changed lines. Check it against the change's actual impact: it is not a verdict
+and not a release gate. Secret values are never printed: findings show the rule,
+the location and a redacted preview.
 
 Exit status:
   0  no blocking findings
@@ -377,7 +378,7 @@ def is_dependency_path(path: str) -> bool:
 
 
 def suggest_tier(changes: List[FileChange]) -> Tuple[int, List[dict], List[str]]:
-    """Return (legacy review cue, reasons, advisory notes) for the change set."""
+    """Return (suggested tier floor, reasons, advisory notes) for the change set."""
     reasons: dict = {}
     notes: List[str] = []
 
@@ -669,7 +670,7 @@ def build_report(changes: List[FileChange], strict: bool) -> dict:
         "files_changed": len(changes),
         "lines_added": sum(len(c.added) for c in changes),
         "lines_removed": sum(len(c.removed) for c in changes),
-        "minimum_tier": TIER_NAMES[tier],  # Legacy JSON key retained for existing consumers.
+        "minimum_tier": TIER_NAMES[tier],  # A suggested floor to check against actual impact.
         "tier_reasons": reasons,
         "notes": notes,
         "test_weakening": [f.as_dict() for f in weakening],

@@ -4,7 +4,7 @@ Use for a changed trust boundary, authentication, permissions, untrusted input o
 
 ## Identify the failure to prevent
 
-List the protected asset, who can influence the input, where authority changes and how the new path could be abused. Connect each material threat to a control and a check. A short PR note is enough when it captures the decision; reuse an existing threat model when one exists.
+List the protected asset, who can influence the input, where authority changes and how the new path could be abused. Connect each material threat to a control and a check. A short PR note is enough when it captures the decision; reuse an existing threat model when one exists. For a new trust boundary, the short method in [threat modeling](threat-modeling.md) helps.
 
 ## Controls that must survive
 
@@ -17,7 +17,7 @@ List the protected asset, who can influence the input, where authority changes a
 | Serialized objects | Use data-only decoding and explicit allowed types. Do not deserialize untrusted input with pickle, unsafe YAML loaders, BinaryFormatter or unrestricted type activation. |
 | Secrets | Use the existing secret store and least-privilege identity. Redact diagnostics. Revoke an exposed credential; removing its text does not revoke it. |
 
-For business operations, test skipped/reordered steps, replay and simultaneous requests. Assign owner, role, price and entitlement from authoritative server state; arbitrary client fields must not overwrite them. Bound expensive work reachable through cheap requests.
+Test business operations against the [abuse cases](threat-modeling.md#abuse-cases), such as skipped or reordered steps. Assign owner, role, price and entitlement from authoritative server state; arbitrary client fields must not overwrite them. Bound expensive work reachable through cheap requests.
 
 ## Sign-in and sessions
 

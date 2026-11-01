@@ -1,6 +1,6 @@
 {
   "name": "whetstone",
-  "description": "Whetstone: focused risk review and verification for consequential software changes.",
+  "description": "Whetstone: risk-scaled engineering care and honest verification for software changes.",
   "owner": {
     "name": "Ricardo Almeida",
     "url": "https://github.com/Ricardodpalmeida"
@@ -9,7 +9,7 @@
     {
       "name": "whetstone",
       "source": "./",
-      "description": "Impact-based review, nine focused references, an optional change note and a diff scanner. Routine edits stay routine.",
+      "description": "Risk tiers as escalation signals, a report with an explicit Not verified line, sixteen focused references, six optional templates and a diff scanner. Small edits stay light.",
       "category": "development",
       "tags": [
         "engineering-standards",
