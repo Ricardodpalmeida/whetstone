@@ -172,6 +172,18 @@ class TierTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(tier_of(git_diff(path, added=["x: 1"]))[0], 2)
 
+    def test_package_manager_config_names_are_build_configuration(self):
+        for path in (".npmrc", "frontend/.npmrc", ".yarnrc", ".yarnrc.yml"):
+            with self.subTest(path=path):
+                tier, labels, _ = tier_of(git_diff(path, added=["x: 1"]))
+                self.assertEqual(tier, 2)
+                self.assertEqual(labels, ["build or package configuration"])
+        for path in ("npmrc.txt", ".npmrc.bak", ".yarnrc.yaml"):
+            with self.subTest(path=path):
+                tier, labels, _ = tier_of(git_diff(path, added=["x: 1"]))
+                self.assertEqual(tier, 1)
+                self.assertEqual(labels, ["code or configuration change"])
+
     def test_prompt_files_are_t2(self):
         tier, labels, _ = tier_of(git_diff("app/prompts/system.md", added=["You are a helpful assistant."]))
         self.assertEqual(tier, 2)

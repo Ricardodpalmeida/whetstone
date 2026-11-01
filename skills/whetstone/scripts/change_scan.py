@@ -273,9 +273,10 @@ CI_BASENAMES = {
     ".pre-commit-config.yaml", "dependabot.yml", "dependabot.yaml", "renovate.json", "renovate.json5",
     ".renovaterc", ".renovaterc.json",
 }
+# Matches the names of changed paths only, to suggest a review tier; the scanner never opens these files.
 BUILD_RE = re.compile(
     r"(^|/)(makefile|justfile|cmakelists\.txt|directory\.build\.(props|targets)|global\.json|nuget\.config|"
-    r"\.npmrc|\.yarnrc(\.yml)?|pip\.conf|tsconfig[^/]*\.json|\.babelrc|"
+    r"\.(?:npmrc|yarnrc(?:\.yml)?)|pip\.conf|tsconfig[^/]*\.json|\.babelrc|"
     r"(vite|webpack|rollup|esbuild|tsup|babel)\.config\.[cm]?[jt]s)$"
 )
 LINT_CONFIG_RE = re.compile(
