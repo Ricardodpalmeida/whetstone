@@ -17,7 +17,7 @@ For a live column rename with old and new application versions running together:
 
 A direct rename can be appropriate in an isolated database with no old consumers. Choose based on deployment and recovery constraints, not a universal migration rule.
 
-Review generated SQL for drops disguised as renames, table rewrites and locks. Check the database version's lock and transaction behavior. In PostgreSQL, a concurrent index build cannot run inside a transaction block and can leave an invalid index after failure; a constraint's `NOT VALID` support depends on its type. Do not copy an online-migration recipe without checking those limits.
+Review generated SQL for drops disguised as renames, table rewrites and locks. Check the database version's lock and transaction behavior. In PostgreSQL, a concurrent index build cannot run inside a transaction block and can leave an invalid index after failure; a constraint's `NOT VALID` support depends on its type. Before adopting an online-migration recipe, check those limits for the target database version. Before running a migration that rewrites or locks production tables, get the user's confirmation unless the request already covers it.
 
 ## Preserve integrity and recovery
 

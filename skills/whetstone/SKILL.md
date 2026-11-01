@@ -3,7 +3,7 @@ name: whetstone
 description: Scales engineering care to the risk of a software change, keeping small edits light and adding evidence, compatibility and recovery checks as risk grows. Use when writing, fixing, debugging, reviewing, refactoring or shipping code, configuration, schemas and migrations, infrastructure, user interfaces, or LLM and agent features in a software project, including casual add, fix or build requests. Not for prose, slides, explanations, summaries or standalone snippets outside a project.
 license: MIT-0
 metadata:
-  version: "0.3.1"
+  version: "0.3.2"
 ---
 
 # Whetstone
@@ -72,7 +72,7 @@ Open a reference only when the change touches its boundary, and prefer the proje
 
 | Situation | Read |
 |---|---|
-| Vague, large or contradictory request, or a performance request without numbers | [Understanding the ask](references/understanding-the-ask.md) |
+| Goal, affected behavior or success check cannot be stated; requirements conflict; work spans several components or consumers; or a performance request has no target number | [Understanding the ask](references/understanding-the-ask.md) |
 | Bug, failing or flaky test, unexplained behavior, incident | [Debugging](references/debugging.md); template: [incident review](templates/incident-review.md) |
 | Choosing evidence for changed behavior | [Verification](references/testing.md) |
 | Choosing an approach, library, datastore or architecture | [Design and decisions](references/design-and-decisions.md); template: [decision record](templates/decision-record.md) |

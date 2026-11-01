@@ -25,7 +25,7 @@ Use a maintained identity library. For OpenID Connect, verify the installed libr
 
 For sessions, preserve secure cookie settings, CSRF protection, session renewal at login/privilege changes and server-side expiry/revocation. A signed cookie can still expose its contents. Keep password policy and hashing parameters aligned with the project's current security requirements and the linked NIST/OWASP guidance rather than copying old defaults.
 
-Use established cryptography and framework protections. Do not add blanket security headers or replace an authentication system without checking affected integrations. Preserve existing access until the replacement has been verified within the authorized change.
+Use established cryptography and framework protections. Before adding blanket security headers or replacing an authentication system, identify the integrations it affects, such as embedded pages, third-party scripts, single sign-on and API clients, and check each one against the planned change. Replacing an authentication system is hard to undo, so get the user's confirmation before that step unless the request already covers it. Preserve existing access until the replacement has been verified within the authorized change.
 
 ## Verify the boundary
 
