@@ -6,7 +6,7 @@ Use when a feature sends data to a model, retrieves private content or lets mode
 
 Map what the model can read, which input is untrusted and which effects its tools can cause. Retrieved text, email, tool results and model-generated arguments do not grant permission. Prompt wording or an injection detector alone is not an access-control boundary.
 
-Enforce identity, allowed operations, destinations and parameter validation in application code. Scope credentials narrowly. For consequential actions, use the product's approved human confirmation or deterministic limits tied to the exact action; a model cannot approve its own refund or data export. Apply budgets, deadlines and bounded tool steps. An ambiguous write result needs outcome checking before a retry.
+Enforce identity, allowed operations, destinations and parameter validation in application code. Scope credentials narrowly. For consequential actions, use the product's approved human confirmation or deterministic limits tied to the exact action; a model cannot approve its own refund or data export. Apply budgets, deadlines and bounded tool steps. An ambiguous write result needs outcome checking before a retry. Record every tool call the agent proposes or makes, with its inputs, the approval or limit that allowed or blocked it, and the outcome, so actions can be investigated and reversed. Redact that record and bound its retention.
 
 Treat generated output as untrusted: validate schemas and business constraints, encode rendered content, and do not execute generated SQL, shell code or tool names directly. A structurally valid response can still be unauthorized or wrong. Constrain external image/link fetching in rendered output: a generated URL can leak data without an explicit tool call. Keep provenance and trust labels when persisting memories; retrieved instructions must not become trusted policy in a later session.
 
@@ -46,7 +46,7 @@ Rerun the set whenever the prompt, model or model version, retrieval settings, c
 
 ## Data sent to model providers
 
-Check provider retention and processing location against the project's requirements before sending private data. Avoid raw prompts/documents in telemetry by default. Preserve approved logging needed to investigate actions, with redaction and bounded retention.
+Check provider retention and processing location against the project's requirements before sending private data. Avoid raw prompts/documents in telemetry by default.
 
 ## Sources
 
