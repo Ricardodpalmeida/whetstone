@@ -1,6 +1,6 @@
 # Understanding the ask
 
-Use when a request is vague, large or contradictory, when a performance request has no numbers, or before T2 and T3 work where a wrong guess would be costly.
+Use for a software change when the goal, the affected behavior or the success check cannot be stated, when two stated requirements conflict, when the work spans several components or consumers, or when a performance request has no target number. Skip it for [T0 and T1](../SKILL.md#size-the-work) work whose goal and success check can be stated, and for requests that already state acceptance criteria.
 
 ## Find the real goal
 

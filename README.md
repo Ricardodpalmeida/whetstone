@@ -149,6 +149,8 @@ It flags likely secrets without printing them, weakened tests and new suppressio
 
 ## What changed
 
+Version 0.3.2 rewords three passages that a security scanner flagged. The clarification reference now lists checkable reasons to use it, such as a goal or success check that cannot be stated or a performance request with no target number, links to the tier definitions, and is skipped for clear T0 and T1 work and for requests that already state acceptance criteria; its routing row matches. The data and security references now name the check that comes first, and agents ask the user before a migration that rewrites or locks production tables or before replacing an authentication system, unless the request already covers it. Nothing else changed.
+
 Version 0.3.1 rewords one sentence in the documentation reference that a security scanner flagged: agents now run the documented commands a change affects in a safe place, and ask before destructive or external ones the request did not cover. Nothing else changed.
 
 Version 0.3.0 keeps the lean 0.2.x base, its authorization model and the concrete failure checks of 0.2.1 and 0.2.2. It brings back what 0.2.0 dropped: a description that covers software changes broadly, T0 to T3 as escalation signals instead of gates, an explicit "Not verified" line, a compact definition of done, and short versions of seven references and five templates. Scanner arguments, JSON fields and exit codes are unchanged, and the full 0.1.x library remains in Git history.
