@@ -8,11 +8,11 @@ Describe the problem in terms of users or operators, with current numbers where 
 
 ## Compare real options
 
-Set at least two viable options beside the smallest possible change, which often wins. Compare them on those qualities plus cost of reversal, operational burden, security impact and migration path. When one unknown dominates, such as a library's behavior or a performance limit, settle it with a time-boxed spike, then discard the spike or re-tier it before reuse. State the choice, the reason and the evidence that would reopen it.
+Set out at least two viable options, including doing nothing when that is viable. Compare them on those qualities plus cost of reversal, operational burden, security impact and migration path. When one unknown dominates, such as a library's behavior or a performance limit, settle it with a time-boxed spike, then discard the spike or re-tier it before reuse. State the choice, the reason and the evidence that would reopen it.
 
 ## Prefer boring and reversible
 
-Use the stack the team already runs unless there is evidence it cannot work. Every new language, framework, datastore or managed service is something to operate, patch and staff for years. Decide cheap-to-reverse choices quickly. Slow down for expensive ones: data models, public contracts, vendor lock-in and security architecture. Build for known requirements rather than speculative extension points, and wait for a third real case before extracting a shared abstraction.
+Use the stack the team already runs unless there is evidence it cannot work. Every new language, framework, datastore or managed service is something to operate, patch and staff for years. Decide cheap-to-reverse choices quickly. Slow down for expensive ones: data models, public contracts, vendor lock-in and security architecture.
 
 Change running systems in releasable steps. Add the new form beside the old one, move consumers, then remove the old form ([contracts](api-design.md) and [data](data-and-privacy.md) show how). Replace a subsystem piece by piece behind a stable interface rather than in one rewrite.
 
@@ -22,7 +22,7 @@ For each new component, decide how it is configured without code changes, how it
 
 ## When a decision record is worth writing
 
-Write one when a decision is expensive to reverse, affects other teams, or will make a future reader ask why the code looks this way. Keep it short: context, options, decision, consequences and what would prompt a revisit. Store it where the repository keeps such records, and mark a reversed decision as superseded instead of deleting it. For most T2 choices, a few lines in the pull request are enough. The [decision record template](../templates/decision-record.md) is optional.
+Write one when a decision is expensive to reverse, affects other teams, or will make a future reader ask why the code looks this way. Cover the context, options, decision, consequences and what would prompt a revisit. Store it where the repository keeps such records, and mark a reversed decision as superseded instead of deleting it. For most T2 choices, a note in the pull request is enough. The [decision record template](../templates/decision-record.md) is optional.
 
 ## Sources
 

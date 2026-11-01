@@ -4,7 +4,7 @@ Use to choose evidence for a changed behavior. Preserve the repository's require
 
 ## Find the cause
 
-For a bug or failing test, reproduce the smallest failing case or inspect its actual output, read the relevant caller and implementation, and change the cause rather than adding a catch-all or retry that hides it. [Debugging](debugging.md) covers isolation, flaky tests and incidents. For performance work, measure the affected interaction and repeat the same measurement after the change ([observability and performance](observability-and-performance.md)).
+For a bug or failing test, reproduce the smallest failing case or inspect its actual output, read the relevant caller and implementation, and change the cause rather than adding a catch-all or retry that hides it. [Debugging](debugging.md) covers isolation, flaky tests and incidents. For performance work, compare the same workload and environment before and after the change. Include tail latency under stated concurrency when users experience slow outliers; an average from an idle system cannot establish that behavior. [Observability and performance](observability-and-performance.md) covers baselines and targets.
 
 A flaky test calls for evidence about shared state, clock assumptions, order, concurrency or external dependencies. A temporary quarantine needs an explicit scope and a tracked fix; it does not establish correctness.
 
@@ -19,7 +19,7 @@ A flaky test calls for evidence about shared state, clock assumptions, order, co
 | Public response | Existing consumers and the changed response shape |
 | UI interaction | User action and observable result, including keyboard operation |
 
-Use a focused unit test for isolated logic and an integration check where the boundary matters. Do not mock away the behavior being verified. A bug regression should fail on the old implementation and pass on the fix when that comparison is practical.
+Use a focused unit test for isolated logic and an integration check where the boundary matters. Do not mock away the behavior being verified. Derive expected values from the contract or independent fixtures, not the production calculation under test. Control clocks and state when timing affects the result. A bug regression should fail on the old implementation and pass on the fix when that comparison is practical.
 
 For a small reversible edit, an existing test or direct check may be enough. Do not create tests that restate constants, wording or implementation details merely to increase coverage. Property-based, load or mutation testing belongs where the input space or failure cost justifies it.
 

@@ -1,6 +1,6 @@
 # Threat modeling
 
-Use when a change adds or moves a trust boundary: a new entry point, integration, file upload, outbound request, role or tenant split, or an agent with tools. Scale the depth to the risk; a few lines in the pull request often suffice, and an existing model should be updated rather than replaced.
+Use when a change adds or moves a trust boundary: a new entry point, integration, file upload, outbound request, role or tenant split, or an agent with tools. Scale the depth to the risk; a note in the pull request often suffices, and an existing model should be updated rather than replaced.
 
 ## Four questions
 
@@ -15,10 +15,10 @@ These questions are adapted from the Threat Modeling Manifesto. Answer them in w
 
 Ask how an intended feature could be misused, not only how code could be attacked:
 
-- A step skipped, repeated or reordered, such as a coupon applied twice or an order confirmed before payment.
+- A step skipped, repeated, replayed or reordered, such as a coupon applied twice or an order confirmed before payment.
 - Two concurrent requests that both succeed where only one should.
 - Identifiers that can be guessed to probe other users' records.
-- Fields the client should not control, such as role, price or owner, accepted through mass assignment.
+- Fields the client should not control, such as role, price, owner or entitlement, accepted through mass assignment.
 - A cheap request that triggers expensive work, such as an export or a model call, at scale.
 
 ## Mitigations become tests

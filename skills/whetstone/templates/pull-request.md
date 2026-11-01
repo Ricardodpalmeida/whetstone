@@ -4,7 +4,7 @@ Optional. Use the repository's own template first, and delete sections that do n
 
 ## Why
 
-The problem or goal in one or two sentences, with the issue link.
+The problem or goal, with the issue link.
 
 ## What changed
 

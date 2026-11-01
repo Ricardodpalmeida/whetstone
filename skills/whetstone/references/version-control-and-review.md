@@ -10,7 +10,7 @@ Use for commits, branches, pull requests, responding to review, or reviewing a d
 - Before committing, read `git status` and the staged diff, and stage files by name so that build output, local configuration and secrets stay out.
 - Follow the repository's conventions for branch names, commit format, sign-off and trailers.
 
-## Small, focused changes
+## Focused changes
 
 Give each commit and pull request one purpose. Keep refactoring, formatting and dependency updates apart from behavior changes, and ship tests with the change they cover. Split large work into steps that each leave the system working: preparation, new code behind a flag, switch-over, clean-up. Keep an unavoidable mechanical change purely mechanical, and say how it was produced so that reviewers can check the method.
 

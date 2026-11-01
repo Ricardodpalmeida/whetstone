@@ -10,7 +10,7 @@ Optional. Write one when the impact or the team's practice calls for it. Keep it
 
 ## Summary
 
-What happened, who was affected and how it was resolved, in three or four sentences.
+What happened, who was affected and how it was resolved.
 
 ## Impact
 

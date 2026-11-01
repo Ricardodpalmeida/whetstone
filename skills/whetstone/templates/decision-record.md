@@ -18,11 +18,11 @@ The problem, the forces at play and the constraints, written so that a reader wh
 |---|---|---|---|
 | A | | | |
 | B | | | |
-| Smallest change, or do nothing | | | |
+| Do nothing | | | |
 
 ## Decision
 
-The choice in one or two sentences, and the reasons that decided it.
+The choice, and the reasons that decided it.
 
 ## Consequences
 

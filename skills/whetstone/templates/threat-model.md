@@ -1,6 +1,6 @@
 # Threat model: system or change
 
-Optional. For most T2 changes, a few lines in the pull request are enough. The four headings adapt the questions of the [Threat Modeling Manifesto](https://www.threatmodelingmanifesto.org/) (CC BY 4.0).
+Optional. For most T2 changes, a note in the pull request is enough. The four headings adapt the questions of the [Threat Modeling Manifesto](https://www.threatmodelingmanifesto.org/) (CC BY 4.0).
 
 ## What are we building?
 
@@ -16,7 +16,7 @@ Actors, processes, data stores and flows, with each trust boundary marked. A sho
 |---|---|---|---|---|---|
 | T1 | | | | | |
 
-Abuse cases considered: skipped or repeated steps, races, guessable identifiers, mass assignment, expensive requests.
+Abuse cases considered: skipped, repeated, replayed or reordered steps, races, guessable identifiers, mass assignment, expensive requests.
 
 For an agent: does it combine private data, untrusted content and the ability to act or send data out? Which of the three is removed or constrained, and how?
 

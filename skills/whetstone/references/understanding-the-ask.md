@@ -4,7 +4,7 @@ Use when a request is vague, large or contradictory, when a performance request 
 
 ## Find the real goal
 
-State in one sentence who benefits, what changes and how success will be observed. If that sentence will not come, the ask is unclear. Name the kind of work, because each ends differently: a fix or feature ends in tested code, an investigation in findings, a review in comments and a spike in a decision.
+State who benefits, what changes and how success will be observed. If any of the three cannot be stated, the ask is unclear. Name the kind of work, because each ends differently: a fix or feature ends in tested code, an investigation in findings, a review in comments and a spike in a decision.
 
 Look for the problem behind a solution-shaped request. "Add a cache" often means "this page is slow", and the cause may be a missing index. Confirm the problem before building the named solution. Propose a clearly better route instead of swapping it in silently.
 

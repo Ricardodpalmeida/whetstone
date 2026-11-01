@@ -2,7 +2,7 @@
 
 Use when adopting/upgrading a dependency or changing how code is built and published.
 
-Check whether the existing project or standard library already covers the need. For a new package, verify its exact registry identity and upstream repository before installation; an agent-suggested name is not evidence that a package exists. Check the intended version's license, relevant advisories and maintenance. Popularity or recent release dates alone do not establish trust.
+For a new package, verify its exact registry identity and upstream repository before installation; an agent-suggested name is not evidence that a package exists. Check the intended version's license, relevant advisories and maintenance. Popularity or recent release dates alone do not establish trust.
 
 Use the project's package manager and lockfile. Review the resulting dependency changes, including unexpected transitive updates and install scripts. Run the tests that exercise the changed dependency and any required audit. A routine compatible update does not automatically need a design document; a replacement that changes data formats, runtime behavior or trust does need those effects checked.
 
@@ -14,7 +14,7 @@ For CI and release changes:
 - Prefer short-lived workload identity where supported. Confirm the intended account, project and permissions before using a deployment credential.
 - Review audit findings by affected version, reachability and exposure. Do not silently suppress a finding or claim an audit ran when it did not.
 
-Preserve required license notices. Use an SBOM, signing or formal attestation when the distribution or project requires it; do not add a release system to an unrelated small change.
+Preserve required license notices. Use an SBOM, signing or formal attestation when the distribution or project requires it.
 
 ## Sources
 
