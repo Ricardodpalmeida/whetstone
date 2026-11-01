@@ -273,7 +273,9 @@ CI_BASENAMES = {
     ".pre-commit-config.yaml", "dependabot.yml", "dependabot.yaml", "renovate.json", "renovate.json5",
     ".renovaterc", ".renovaterc.json",
 }
-# Matches the names of changed paths only, to suggest a review tier; the scanner never opens these files.
+# Classifies changed path names to suggest a review tier. File contents are checked separately: changed lines
+# from the diff, and untracked files under the size limit read from disk, are scanned for likely secrets,
+# which are reported with redacted previews.
 BUILD_RE = re.compile(
     r"(^|/)(makefile|justfile|cmakelists\.txt|directory\.build\.(props|targets)|global\.json|nuget\.config|"
     r"\.(?:npmrc|yarnrc(?:\.yml)?)|pip\.conf|tsconfig[^/]*\.json|\.babelrc|"
