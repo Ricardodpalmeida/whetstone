@@ -151,6 +151,8 @@ It flags likely secrets without printing them, weakened tests and new suppressio
 
 Version 0.3.4 corrects a claim made in 0.3.3: `change_scan.py` does read file contents, the changed lines from the diff and untracked files under 1 MB from disk, to look for likely secrets, which it reports without printing them. Only the regular expression changed in 0.3.3 is limited to file names, and the comment above it now says so. Nothing else changed.
 
+Version 0.3.5 makes one T2 phrase checkable: "Write a short plan" becomes "Write a plan of 10 lines at most". Nothing else changed.
+
 Version 0.3.3 rewrites one regular expression in `change_scan.py` so that a security scanner no longer reads a file-name pattern as credential access. That pattern only classifies the names of changed files. It also drops the quotes around the version and the code formatting around two file names in SKILL.md, which the scanner read as missing files. Behavior and output are unchanged.
 
 Version 0.3.2 rewords three passages that a security scanner flagged. The clarification reference now lists checkable reasons to use it, such as a goal or success check that cannot be stated or a performance request with no target number, links to the tier definitions, and is skipped for clear T0 and T1 work and for requests that already state acceptance criteria; its routing row matches. The data and security references now name the check that comes first, and agents ask the user before a migration that rewrites or locks production tables or before replacing an authentication system, unless the request already covers it. Nothing else changed.
