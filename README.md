@@ -14,6 +14,10 @@ A typo and a payment retry should not get the same care. **Whetstone** is an Age
 
 It does not ask again for work you already authorized, and it adds no automatic documents or approval gates. It does ask before an irreversible or externally visible step that your request did not cover, such as a push, a deployment, deleting real data or sending a message.
 
+## Quick navigation
+
+[Risk tiers](#how-it-scales) · [Workflow](#how-it-works) · [Evaluation](#evaluation) · [Install](#install) · [Optional scanner](#optional-change-scan) · [Release notes](#what-changed)
+
 ## How it scales
 
 The agent picks a tier from the actual change, not from keywords. Each row sums up the answer an agent gave with Whetstone 0.3.0 in the [evaluation](#evaluation) below.
@@ -148,6 +152,8 @@ python3 <skill-dir>/scripts/change_scan.py --base main --json
 It flags likely secrets without printing them, weakened tests and new suppressions, and suggests a tier from the changed paths and text, shown as `Review cue` in text and as `minimum_tier` with `tier_reasons` in JSON. Treat that tier as a floor to check against the change's actual impact, not a verdict or a release gate. It exits 0 with no blocking findings, 1 for a likely secret (with `--strict`, also for test weakening or a new suppression) and 2 on a usage or read failure. A known false positive can carry `change-scan: ignore` or `pragma: allowlist secret` on its line. Binary content and untracked files over 1 MB are skipped, and a clean scan is not a security audit.
 
 ## What changed
+
+Version 0.3.6 is documentation-only: README quick-navigation links and a user-documentation index in the package. Agent instructions, references, scanner, templates, examples and configuration are unchanged.
 
 Version 0.3.4 corrects a claim made in 0.3.3: `change_scan.py` does read file contents, the changed lines from the diff and untracked files under 1 MB from disk, to look for likely secrets, which it reports without printing them. Only the regular expression changed in 0.3.3 is limited to file names, and the comment above it now says so. Nothing else changed.
 
