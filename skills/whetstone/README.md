@@ -1,5 +1,7 @@
 # Whetstone: user documentation
 
+Engineering guidance for coding agents, with checks matched to the risk of each change and an explicit account of what was verified.
+
 ## Guides
 
 - [Overview, installation and release notes](https://github.com/Ricardodpalmeida/whetstone/blob/main/README.md)
@@ -35,6 +37,7 @@
 
 ## Package information
 
+- [ClawHub package](https://clawhub.ai/ricardodpalmeida/skills/whetstone)
 - [Agent workflow](SKILL.md)
 - [Optional scanner source](scripts/change_scan.py)
 - [MIT-0 license](https://github.com/Ricardodpalmeida/whetstone/blob/main/LICENSE)

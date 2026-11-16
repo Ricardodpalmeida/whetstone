@@ -153,6 +153,8 @@ It flags likely secrets without printing them, weakened tests and new suppressio
 
 ## What changed
 
+Version 0.3.7 updates the packaged README overview and adds its canonical ClawHub link. Agent instructions, references, templates and scanner code are unchanged.
+
 Version 0.3.6 is documentation-only: README quick-navigation links and a user-documentation index in the package. Agent instructions, references, scanner, templates, examples and configuration are unchanged.
 
 Version 0.3.4 corrects a claim made in 0.3.3: `change_scan.py` does read file contents, the changed lines from the diff and untracked files under 1 MB from disk, to look for likely secrets, which it reports without printing them. Only the regular expression changed in 0.3.3 is limited to file names, and the comment above it now says so. Nothing else changed.
